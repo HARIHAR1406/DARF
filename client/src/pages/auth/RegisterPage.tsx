@@ -1,7 +1,7 @@
 import React from 'react';
+import { RegisterForm } from '../../components/authentication';
 
 const RegisterPage: React.FC = () => {
-  // TODO: Implement registration form
-  return <div className="p-4 text-center"><h1>Register</h1></div>;
+  return <RegisterForm />;
 };
 export default RegisterPage;

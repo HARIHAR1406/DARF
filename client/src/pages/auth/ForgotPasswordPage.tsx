@@ -1,7 +1,7 @@
 import React from 'react';
+import { ForgotPasswordForm } from '../../components/authentication';
 
 const ForgotPasswordPage: React.FC = () => {
-  // TODO: Implement forgot password form
-  return <div className="p-4 text-center"><h1>Forgot Password</h1></div>;
+  return <ForgotPasswordForm />;
 };
 export default ForgotPasswordPage;

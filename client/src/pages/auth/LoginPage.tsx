@@ -1,7 +1,7 @@
 import React from 'react';
+import { LoginForm } from '../../components/authentication';
 
 const LoginPage: React.FC = () => {
-  // TODO: Implement login form with React Hook Form + Zod
-  return <div className="p-4 text-center"><h1>Login</h1></div>;
+  return <LoginForm />;
 };
 export default LoginPage;
