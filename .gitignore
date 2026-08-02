@@ -1,8 +1,18 @@
+# Dependencies
 node_modules/
+
+# Build files
 dist/
 build/
-coverage/
+
+# Environment files
 .env
-.next/
-.vercel/
+.env.*
+!.env.example
+
+# Logs
 *.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
