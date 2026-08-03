@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
+import { Sidebar } from '../components/navigation';
+import { Loader } from '../components/common';
 
 export const AppLayout: React.FC = () => {
-  // TODO: Add sidebar navigation and top header for the main application
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar Placeholder */}
-      <div className="w-64 border-r border-border hidden md:block" />
-      <main className="flex-1 overflow-y-auto">
-        <Outlet />
+    <div className="flex h-screen overflow-hidden bg-background w-full">
+      <Sidebar />
+      <main className="flex-1 overflow-hidden flex flex-col relative">
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><Loader size={32} /></div>}>
+          <Outlet />
+        </Suspense>
       </main>
     </div>
   );

@@ -1,7 +1,14 @@
 import React from 'react';
+import { ChatWindow, ConversationSidebar } from '../../components/chat';
 
 const ChatPage: React.FC = () => {
-  // TODO: Implement main chat interface similar to ChatGPT
-  return <div className="p-8"><h1>Chat Application</h1></div>;
+  return (
+    <div className="flex h-full w-full overflow-hidden relative">
+      <ConversationSidebar />
+      <div className="flex-1 min-w-0">
+        <ChatWindow />
+      </div>
+    </div>
+  );
 };
 export default ChatPage;
