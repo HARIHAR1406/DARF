@@ -9,6 +9,7 @@ export const DocsPage = lazy(() => import('../pages/public/DocsPage'));
 export const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 export const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'));
 export const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'));
+export const VerifyEmailPage = lazy(() => import('../pages/auth/VerifyEmailPage'));
 export const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'));
 
 // App

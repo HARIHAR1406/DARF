@@ -7,6 +7,7 @@ import { AdminLayout } from '../layouts/AdminLayout';
 import { DestructorLayout } from '../layouts/DestructorLayout';
 
 import { ProtectedRoute } from './ProtectedRoute';
+import { PublicRoute } from './PublicRoute';
 import { AdminRoute } from './AdminRoute';
 import { DestructorRoute } from './DestructorRoute';
 
@@ -26,11 +27,14 @@ export const AppRouter: React.FC = () => {
             <Route path="/docs" element={<Pages.DocsPage />} />
 
             {/* Auth Routes */}
-            <Route element={<AuthLayout />}>
-              <Route path="/login" element={<Pages.LoginPage />} />
-              <Route path="/register" element={<Pages.RegisterPage />} />
-              <Route path="/forgot-password" element={<Pages.ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<Pages.ResetPasswordPage />} />
+            <Route element={<PublicRoute />}>
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<Pages.LoginPage />} />
+                <Route path="/register" element={<Pages.RegisterPage />} />
+                <Route path="/forgot-password" element={<Pages.ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<Pages.ResetPasswordPage />} />
+                <Route path="/verify-email" element={<Pages.VerifyEmailPage />} />
+              </Route>
             </Route>
 
             {/* Protected App Routes */}
