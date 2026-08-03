@@ -1,3 +1,3 @@
-export * from './AppRouter';
-export * from './ProtectedRoute';
-export * from './PublicRoute';
+export { AppRouter } from './AppRouter';
+export { ProtectedRoute } from './ProtectedRoute';
+export { PublicRoute } from './PublicRoute';

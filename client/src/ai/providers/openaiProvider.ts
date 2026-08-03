@@ -11,12 +11,12 @@ export class OpenAIProvider implements AIProvider {
 
   async generateText(context: ChatContext, config?: ProviderConfiguration): Promise<string> {
     return withRetry(async () => {
-      const messages: any[] = [];
+      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
       if (context.systemInstruction) {
         messages.push({ role: 'system', content: context.systemInstruction });
       }
       messages.push(...context.messages.map(m => ({
-        role: m.role === 'model' ? 'assistant' : m.role,
+        role: (m.role === 'model' ? 'assistant' : m.role) as 'user' | 'system' | 'assistant',
         content: m.content
       })));
 
@@ -31,12 +31,12 @@ export class OpenAIProvider implements AIProvider {
 
   async streamText(context: ChatContext, onChunk: (chunk: StreamingChunk) => void, config?: ProviderConfiguration): Promise<void> {
     return withRetry(async () => {
-      const messages: any[] = [];
+      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
       if (context.systemInstruction) {
         messages.push({ role: 'system', content: context.systemInstruction });
       }
       messages.push(...context.messages.map(m => ({
-        role: m.role === 'model' ? 'assistant' : m.role,
+        role: (m.role === 'model' ? 'assistant' : m.role) as 'user' | 'system' | 'assistant',
         content: m.content
       })));
 

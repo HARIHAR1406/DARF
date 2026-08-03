@@ -14,7 +14,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 // Connection management, Error handling, Request retry handling, Centralized logging
 export const executeQuery = async <T>(
   operationName: string, 
-  queryFn: () => PromiseLike<{ data: T | null; error: any }>, 
+  queryFn: () => PromiseLike<{ data: T | null; error: unknown }>, 
   retries = 3
 ): Promise<T | null> => {
   let attempt = 0;
@@ -29,11 +29,11 @@ export const executeQuery = async <T>(
       
       console.log(`[Supabase] Success: ${operationName}`);
       return data as T;
-    } catch (error: any) {
-      console.error(`[Supabase] Error in ${operationName}:`, error.message || error);
+    } catch (error: unknown) {
+      console.error(`[Supabase] Error in ${operationName}:`, error instanceof Error ? error.message : String(error));
       attempt++;
       if (attempt >= retries) {
-        throw new Error(`Failed operation ${operationName} after ${retries} attempts. Details: ${error.message || 'Unknown error'}`);
+        throw new Error(`Failed operation ${operationName} after ${retries} attempts. Details: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
       // Exponential backoff
       await new Promise(res => setTimeout(res, 500 * Math.pow(2, attempt)));

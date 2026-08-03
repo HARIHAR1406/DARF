@@ -14,8 +14,8 @@ export const useRegister = () => {
       await registerWithEmail(credentials);
       toast.success('Registration successful!');
       navigate('/chat');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to register');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to register');
     } finally {
       setIsLoading(false);
     }

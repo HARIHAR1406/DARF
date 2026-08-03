@@ -54,9 +54,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
           set({ isStreaming: false });
         }
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      get().updateLastMessage('\n\n**Error:** ' + err.message);
+      get().updateLastMessage('\n\n**Error:** ' + (err instanceof Error ? err.message : String(err)));
       set({ isStreaming: false });
     }
   }

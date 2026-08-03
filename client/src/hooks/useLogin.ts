@@ -14,8 +14,8 @@ export const useLogin = () => {
       await loginWithEmail(credentials);
       toast.success('Login successful!');
       navigate('/chat');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to login');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to login');
     } finally {
       setIsLoading(false);
     }
@@ -27,8 +27,8 @@ export const useLogin = () => {
       await loginWithGoogle();
       toast.success('Logged in with Google!');
       navigate('/chat');
-    } catch (error: any) {
-      toast.error(error.message || 'Google login failed');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Google login failed');
     } finally {
       setIsLoading(false);
     }

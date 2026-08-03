@@ -11,7 +11,7 @@ interface RoleGuardProps {
 export const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) => {
   const { user } = useAuthStore();
   // We assume user role is mapped somewhere or default to USER
-  const userRole: Role = (user as any)?.role || 'USER';
+  const userRole: Role = (user as unknown as Record<string, unknown>)?.role as Role || 'USER';
 
   if (!allowedRoles.includes(userRole)) {
     return <Navigate to="/" replace />;

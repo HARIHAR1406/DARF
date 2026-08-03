@@ -7,7 +7,7 @@ export const withRetry = async <T>(
   while (attempt < maxRetries) {
     try {
       return await operation();
-    } catch (error: any) {
+    } catch (error: unknown) {
       attempt++;
       if (attempt >= maxRetries) throw error;
       const delay = baseDelayMs * Math.pow(2, attempt - 1);

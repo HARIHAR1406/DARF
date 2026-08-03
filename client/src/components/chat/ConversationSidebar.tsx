@@ -6,7 +6,7 @@ import { useChatStore } from '../../store/chatStore';
 
 export const ConversationSidebar: React.FC = () => {
   const { provider, setProvider, clearChat } = useChatStore();
-  const chats: any[] = []; // History mocked for now
+  const chats: { id: string; title: string }[] = []; // History mocked for now
 
   return (
     <div className="w-64 border-r border-border bg-background-secondary flex flex-col h-full hidden lg:flex shrink-0">
@@ -31,7 +31,7 @@ export const ConversationSidebar: React.FC = () => {
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        {chats.map((chat: any) => (
+        {chats.map((chat) => (
           <motion.button
             key={chat.id}
             whileHover={{ scale: 1.01 }}
