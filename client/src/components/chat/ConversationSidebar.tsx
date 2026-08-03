@@ -1,18 +1,34 @@
 import React from 'react';
-import { Plus, MessageSquare, Trash2 } from 'lucide-react';
-import { Button } from '../common';
+import { Plus, MessageSquare, Trash2, Settings2 } from 'lucide-react';
+import { Button, Tooltip } from '../common';
 import { motion } from 'framer-motion';
+import { useChatStore } from '../../store/chatStore';
 
 export const ConversationSidebar: React.FC = () => {
-  const chats: any[] = []; 
+  const { provider, setProvider, clearChat } = useChatStore();
+  const chats: any[] = []; // History mocked for now
 
   return (
     <div className="w-64 border-r border-border bg-background-secondary flex flex-col h-full hidden lg:flex shrink-0">
-      <div className="p-4 border-b border-border">
-        <Button variant="glass" className="w-full flex justify-start items-center" size="sm">
+      <div className="p-4 border-b border-border space-y-4">
+        <Button variant="glass" className="w-full flex justify-start items-center" size="sm" onClick={clearChat}>
           <Plus size={16} className="mr-2" />
           New Connection
         </Button>
+        <div className="flex justify-between items-center bg-background p-1 rounded border border-border">
+          <button 
+            onClick={() => setProvider('gemini')}
+            className={`flex-1 py-1 px-2 rounded text-xs font-mono transition-colors ${provider === 'gemini' ? 'bg-primary/20 text-primary' : 'text-text-secondary'}`}
+          >
+            Gemini
+          </button>
+          <button 
+            onClick={() => setProvider('openai')}
+            className={`flex-1 py-1 px-2 rounded text-xs font-mono transition-colors ${provider === 'openai' ? 'bg-primary/20 text-primary' : 'text-text-secondary'}`}
+          >
+            OpenAI
+          </button>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {chats.map((chat: any) => (
