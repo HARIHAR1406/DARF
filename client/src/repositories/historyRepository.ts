@@ -1,20 +1,16 @@
-import { supabase, executeQuery } from '../config/supabase';
-import { TABLES } from '../database/tables';
+// Preserved for backward compatibility, mapping directly to MessageRepository logic
+import { MessageRepository } from './messageRepository';
 import { Database } from '../types/database';
 
-type HistoryRow = Database['public']['Tables']['history']['Row'];
-type HistoryInsert = Database['public']['Tables']['history']['Insert'];
+type HistoryRow = Database['public']['Tables']['messages']['Row'];
+type HistoryInsert = Database['public']['Tables']['messages']['Insert'];
 
 export const HistoryRepository = {
   async getByChatId(chatId: string): Promise<HistoryRow[] | null> {
-    return executeQuery('HistoryRepository.getByChatId', () => 
-      supabase.from(TABLES.HISTORY).select('*').eq('chat_id', chatId)
-    );
+    return MessageRepository.getByChatId(chatId);
   },
   
   async create(history: HistoryInsert): Promise<HistoryRow | null> {
-    return executeQuery('HistoryRepository.create', () => 
-      supabase.from(TABLES.HISTORY).insert(history).select().single()
-    );
+    return MessageRepository.create(history);
   }
 };

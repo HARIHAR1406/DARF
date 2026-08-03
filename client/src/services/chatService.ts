@@ -10,5 +10,9 @@ export const ChatService = {
   
   async createNewChat(chat: ChatInsert) {
     return ChatRepository.create(chat);
+  },
+
+  async deleteChat(chatId: string) {
+    return ChatRepository.delete(chatId);
   }
 };
