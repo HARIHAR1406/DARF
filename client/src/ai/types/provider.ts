@@ -1,4 +1,4 @@
-import { AIMessage, ChatContext, StreamingChunk } from './ai';
+import { ChatContext, StreamingChunk } from './ai';
 
 export interface ProviderConfiguration {
   temperature?: number;

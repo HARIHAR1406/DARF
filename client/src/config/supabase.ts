@@ -14,7 +14,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 // Connection management, Error handling, Request retry handling, Centralized logging
 export const executeQuery = async <T>(
   operationName: string, 
-  queryFn: () => Promise<{ data: T | null; error: any }>, 
+  queryFn: () => PromiseLike<{ data: T | null; error: any }>, 
   retries = 3
 ): Promise<T | null> => {
   let attempt = 0;

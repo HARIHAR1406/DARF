@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Toaster } from 'react-hot-toast';
 import { AppRouter } from './routes/AppRouter';
 import { useSession } from './hooks/useSession';

@@ -16,7 +16,7 @@ class MessageRepositoryClass extends BaseRepository<MessageRow, MessageInsert, M
     const res = await executeQuery('MessageRepository.getByChatId', () =>
       supabase.from(this.tableName).select('*').eq('chat_id', chatId).order('created_at', { ascending: true })
     );
-    return res || [];
+    return (res as MessageRow[]) || [];
   }
 }
 

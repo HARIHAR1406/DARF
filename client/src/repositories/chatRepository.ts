@@ -16,7 +16,7 @@ class ChatRepositoryClass extends BaseRepository<ChatRow, ChatInsert, ChatUpdate
     const res = await executeQuery('ChatRepository.getByUserId', () =>
       supabase.from(this.tableName).select('*').eq('user_id', userId).order('created_at', { ascending: false })
     );
-    return res || [];
+    return (res as ChatRow[]) || [];
   }
 }
 

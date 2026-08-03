@@ -5,7 +5,7 @@ interface AdminState {
   logs: any[];
 }
 
-export const useAdminStore = create<AdminState>((set) => ({
+export const useAdminStore = create<AdminState>(() => ({
   logs: [],
   // TODO: Add admin actions
 }));

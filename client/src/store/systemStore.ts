@@ -5,7 +5,7 @@ interface SystemState {
   isDestructorActive: boolean;
 }
 
-export const useSystemStore = create<SystemState>((set) => ({
+export const useSystemStore = create<SystemState>(() => ({
   isDestructorActive: false,
   // TODO: Add system actions
 }));

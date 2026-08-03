@@ -1,6 +1,6 @@
 import React from 'react';
-import { Plus, MessageSquare, Trash2, Settings2 } from 'lucide-react';
-import { Button, Tooltip } from '../common';
+import { Plus, MessageSquare, Trash2 } from 'lucide-react';
+import { Button } from '../common';
 import { motion } from 'framer-motion';
 import { useChatStore } from '../../store/chatStore';
 
