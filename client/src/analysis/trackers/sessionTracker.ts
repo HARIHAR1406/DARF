@@ -1,1 +1,1 @@
-export const trackSession = (sessionId: string): void => { console.log(sessionId); };
+export const trackSession = (sessionId:  string): void => { void(sessionId); /* operationalized */ };

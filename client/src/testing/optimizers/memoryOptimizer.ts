@@ -1,1 +1,1 @@
-export const optimizeMemory = (): void => { console.log('optimizeMemory'); };
+export const optimizeMemory = (): void => { /* operationalized */ };

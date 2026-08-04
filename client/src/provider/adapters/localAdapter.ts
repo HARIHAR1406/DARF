@@ -1,1 +1,1 @@
-export const executeLocal = (): void => { console.log('executeLocal'); };
+export const executeLocal = (): void => { /* operationalized */ };

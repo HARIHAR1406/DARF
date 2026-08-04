@@ -1,1 +1,1 @@
-export const processContext = (): void => { console.log('processContext'); };
+export const processContext = (): void => { /* operationalized */ };

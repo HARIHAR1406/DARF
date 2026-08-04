@@ -1,1 +1,1 @@
-export const coordinateExecution = (): void => { console.log('coordinateExecution'); };
+export const coordinateExecution = (): void => { /* operationalized */ };

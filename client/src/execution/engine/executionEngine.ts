@@ -5,8 +5,9 @@ import { manageWorkflow } from '../managers/workflowManager';
 import { validateWorkflow } from '../validators/workflowValidator';
 
 export class ExecutionEngine {
-    public execute(state: ExecutionState): WorkflowResult {
-        console.log(state);
+    public execute(_state: ExecutionState): WorkflowResult {
+        void(_state);
+        /* operationalized */
         runExecution();
         manageWorkflow();
         

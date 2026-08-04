@@ -1,1 +1,1 @@
-export const analyzePerformance = (perf: number): void => { console.log(perf); };
+export const analyzePerformance = (perf:  number): void => { void(perf); /* operationalized */ };

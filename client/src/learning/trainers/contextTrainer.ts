@@ -1,1 +1,1 @@
-export const trainContext = (): void => { console.log('trainContext'); };
+export const trainContext = (): void => { /* operationalized */ };

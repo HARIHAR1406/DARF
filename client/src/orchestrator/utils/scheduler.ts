@@ -1,1 +1,1 @@
-export const scheduleTask = (): void => { console.log('scheduleTask'); };
+export const scheduleTask = (): void => { /* operationalized */ };

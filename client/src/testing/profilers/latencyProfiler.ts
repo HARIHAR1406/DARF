@@ -1,1 +1,1 @@
-export const profileLatency = (): void => { console.log('profileLatency'); };
+export const profileLatency = (): void => { /* operationalized */ };

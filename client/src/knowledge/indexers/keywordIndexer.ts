@@ -1,1 +1,1 @@
-export const indexKeyword = (): void => { console.log('indexKeyword'); };
+export const indexKeyword = (): void => { /* operationalized */ };

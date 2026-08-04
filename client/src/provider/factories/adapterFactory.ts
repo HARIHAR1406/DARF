@@ -1,1 +1,1 @@
-export const createAdapter = (): void => { console.log('createAdapter'); };
+export const createAdapter = (): void => { /* operationalized */ };

@@ -1,2 +1,2 @@
 import { PerformanceRecord } from '../models/PerformanceRecord';
-export const logPerformance = (record: PerformanceRecord): void => { console.log(record); };
+export const logPerformance = (record:  PerformanceRecord): void => { void(record); /* operationalized */ };

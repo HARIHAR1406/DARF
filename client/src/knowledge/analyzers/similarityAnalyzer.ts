@@ -1,1 +1,1 @@
-export const analyzeSimilarity = (): void => { console.log('analyzeSimilarity'); };
+export const analyzeSimilarity = (): void => { /* operationalized */ };

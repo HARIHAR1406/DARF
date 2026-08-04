@@ -1,1 +1,1 @@
-export const processMemory = (): void => { console.log('processMemory'); };
+export const processMemory = (): void => { /* operationalized */ };

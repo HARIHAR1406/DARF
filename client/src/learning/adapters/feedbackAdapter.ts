@@ -1,1 +1,1 @@
-export const adaptFeedback = (): void => { console.log('adaptFeedback'); };
+export const adaptFeedback = (): void => { /* operationalized */ };

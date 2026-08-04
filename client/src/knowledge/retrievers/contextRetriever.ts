@@ -1,1 +1,1 @@
-export const retrieveContext = (): void => { console.log('retrieveContext'); };
+export const retrieveContext = (): void => { /* operationalized */ };

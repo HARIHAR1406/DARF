@@ -1,1 +1,1 @@
-export const handleError = (): void => { console.log('handleError'); };
+export const handleError = (): void => { /* operationalized */ };

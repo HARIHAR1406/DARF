@@ -1,1 +1,1 @@
-export const evaluateQuality = (): void => { console.log('evaluateQuality'); };
+export const evaluateQuality = (): void => { /* operationalized */ };

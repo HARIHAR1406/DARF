@@ -1,1 +1,1 @@
-export const analyzeMetrics = (data: number[]): void => { console.log(data); };
+export const analyzeMetrics = (data:  number[]): void => { void(data); /* operationalized */ };

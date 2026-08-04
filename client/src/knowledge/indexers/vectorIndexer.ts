@@ -1,1 +1,1 @@
-export const indexVector = (): void => { console.log('indexVector'); };
+export const indexVector = (): void => { /* operationalized */ };

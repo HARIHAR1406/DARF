@@ -1,1 +1,1 @@
-export const executeContextPipeline = (): void => { console.log('executeContextPipeline'); };
+export const executeContextPipeline = (): void => { /* operationalized */ };

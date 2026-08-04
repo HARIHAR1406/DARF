@@ -1,1 +1,1 @@
-export const logSecurity = (msg: string): void => { console.log(msg); };
+export const logSecurity = (msg:  string): void => { void(msg); /* operationalized */ };

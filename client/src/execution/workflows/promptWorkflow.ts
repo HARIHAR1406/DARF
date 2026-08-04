@@ -1,1 +1,1 @@
-export const runPromptWorkflow = (): void => { console.log('runPromptWorkflow'); };
+export const runPromptWorkflow = (): void => { /* operationalized */ };

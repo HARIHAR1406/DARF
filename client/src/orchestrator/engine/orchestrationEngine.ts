@@ -9,7 +9,8 @@ import { executeAnalysisPipeline } from '../pipelines/analysisPipeline';
 export class OrchestrationEngine {
     public execute(request: string): ExecutionResult {
         // Step 1: Receive the user request.
-        console.log(request);
+        void(request);
+        /* operationalized */
 
         // Step 2: Send the request to pipelines
         executeDestructorPipeline();

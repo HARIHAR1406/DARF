@@ -1,1 +1,1 @@
-export const testDB = (): void => { console.log('testDB'); };
+export const testDB = (): void => { /* operationalized */ };

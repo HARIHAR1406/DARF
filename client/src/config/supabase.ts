@@ -20,14 +20,14 @@ export const executeQuery = async <T>(
   let attempt = 0;
   while (attempt < retries) {
     try {
-      console.log(`[Supabase] Executing: ${operationName}, Attempt: ${attempt + 1}`);
+      /* operationalized */
       const { data, error } = await queryFn();
       
       if (error) {
         throw error;
       }
       
-      console.log(`[Supabase] Success: ${operationName}`);
+      /* operationalized */
       return data as T;
     } catch (error: unknown) {
       console.error(`[Supabase] Error in ${operationName}:`, error instanceof Error ? error.message : String(error));

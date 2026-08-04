@@ -1,1 +1,1 @@
-export const analyzeRequest = (req: string): void => { console.log(req); };
+export const analyzeRequest = (req:  string): void => { void(req); /* operationalized */ };

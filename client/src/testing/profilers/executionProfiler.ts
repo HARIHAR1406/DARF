@@ -1,1 +1,1 @@
-export const profileExecution = (): void => { console.log('profileExecution'); };
+export const profileExecution = (): void => { /* operationalized */ };

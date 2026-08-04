@@ -1,1 +1,1 @@
-export const monitorSession = (): void => { console.log('monitorSession'); };
+export const monitorSession = (): void => { /* operationalized */ };

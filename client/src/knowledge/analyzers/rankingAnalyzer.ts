@@ -1,1 +1,1 @@
-export const analyzeRanking = (): void => { console.log('analyzeRanking'); };
+export const analyzeRanking = (): void => { /* operationalized */ };

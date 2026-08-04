@@ -1,1 +1,1 @@
-export const benchmarkCache = (): void => { console.log('benchmarkCache'); };
+export const benchmarkCache = (): void => { /* operationalized */ };

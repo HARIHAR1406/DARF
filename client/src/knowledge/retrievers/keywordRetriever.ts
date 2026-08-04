@@ -1,1 +1,1 @@
-export const retrieveKeyword = (): void => { console.log('retrieveKeyword'); };
+export const retrieveKeyword = (): void => { /* operationalized */ };

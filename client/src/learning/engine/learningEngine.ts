@@ -6,7 +6,7 @@ import { evaluateAccuracy } from '../evaluators/accuracyEvaluator';
 
 export class LearningEngine {
     public execute(state: LearningState): EvaluationResult {
-        console.log(state);
+        /* operationalized */
         if (!validateLearning(state)) {
             throw new Error('Learning validation failed');
         }

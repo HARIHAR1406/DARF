@@ -1,1 +1,1 @@
-export const testRebuild = (): void => { console.log('testRebuild'); };
+export const testRebuild = (): void => { /* operationalized */ };

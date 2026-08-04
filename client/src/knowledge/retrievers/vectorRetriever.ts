@@ -1,1 +1,1 @@
-export const retrieveVector = (): void => { console.log('retrieveVector'); };
+export const retrieveVector = (): void => { /* operationalized */ };

@@ -1,1 +1,1 @@
-export const runAnalysisWorkflow = (): void => { console.log('runAnalysisWorkflow'); };
+export const runAnalysisWorkflow = (): void => { /* operationalized */ };

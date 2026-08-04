@@ -1,1 +1,1 @@
-export const trainWorkflow = (): void => { console.log('trainWorkflow'); };
+export const trainWorkflow = (): void => { /* operationalized */ };

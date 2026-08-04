@@ -1,1 +1,1 @@
-export const manageLifecycle = (): void => { console.log('manageLifecycle'); };
+export const manageLifecycle = (): void => { /* operationalized */ };

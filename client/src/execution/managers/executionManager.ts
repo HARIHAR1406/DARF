@@ -1,1 +1,1 @@
-export const manageExecution = (): void => { console.log('manageExecution'); };
+export const manageExecution = (): void => { /* operationalized */ };

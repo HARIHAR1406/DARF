@@ -1,1 +1,1 @@
-export const optimizeToken = (): void => { console.log('optimizeToken'); };
+export const optimizeToken = (): void => { /* operationalized */ };

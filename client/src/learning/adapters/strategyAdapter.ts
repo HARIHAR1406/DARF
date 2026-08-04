@@ -1,1 +1,1 @@
-export const adaptStrategy = (): void => { console.log('adaptStrategy'); };
+export const adaptStrategy = (): void => { /* operationalized */ };

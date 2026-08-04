@@ -1,1 +1,1 @@
-export const analyzePrediction = (): void => { console.log('analyzePrediction'); };
+export const analyzePrediction = (): void => { /* operationalized */ };

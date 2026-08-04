@@ -1,1 +1,1 @@
-export const testContext = (): void => { console.log('testContext'); };
+export const testContext = (): void => { /* operationalized */ };

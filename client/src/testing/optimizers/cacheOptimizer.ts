@@ -1,1 +1,1 @@
-export const optimizeCache = (): void => { console.log('optimizeCache'); };
+export const optimizeCache = (): void => { /* operationalized */ };

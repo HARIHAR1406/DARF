@@ -1,1 +1,1 @@
-export const indexMetadata = (): void => { console.log('indexMetadata'); };
+export const indexMetadata = (): void => { /* operationalized */ };

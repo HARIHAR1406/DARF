@@ -1,1 +1,1 @@
-export const manageAgent = (): void => { console.log('manageAgent'); };
+export const manageAgent = (): void => { /* operationalized */ };

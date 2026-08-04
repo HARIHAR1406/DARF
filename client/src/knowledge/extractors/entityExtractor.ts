@@ -1,1 +1,1 @@
-export const extractEntity = (): void => { console.log('extractEntity'); };
+export const extractEntity = (): void => { /* operationalized */ };

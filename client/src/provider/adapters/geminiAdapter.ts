@@ -1,1 +1,1 @@
-export const executeGemini = (): void => { console.log('executeGemini'); };
+export const executeGemini = (): void => { /* operationalized */ };

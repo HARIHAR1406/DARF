@@ -1,1 +1,1 @@
-export const processMetadata = (): void => { console.log('processMetadata'); };
+export const processMetadata = (): void => { /* operationalized */ };

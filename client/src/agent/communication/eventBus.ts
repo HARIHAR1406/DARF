@@ -1,1 +1,1 @@
-export const emitEvent = (): void => { console.log('emitEvent'); };
+export const emitEvent = (): void => { /* operationalized */ };

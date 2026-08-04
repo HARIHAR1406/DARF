@@ -1,1 +1,1 @@
-export const executeProviderPipeline = (): void => { console.log('executeProviderPipeline'); };
+export const executeProviderPipeline = (): void => { /* operationalized */ };

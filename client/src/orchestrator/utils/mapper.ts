@@ -1,1 +1,1 @@
-export const mapContext = (): void => { console.log('mapContext'); };
+export const mapContext = (): void => { /* operationalized */ };

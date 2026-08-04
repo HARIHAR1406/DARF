@@ -1,1 +1,1 @@
-export const benchmarkToken = (): void => { console.log('benchmarkToken'); };
+export const benchmarkToken = (): void => { /* operationalized */ };

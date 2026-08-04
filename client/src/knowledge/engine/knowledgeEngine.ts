@@ -6,7 +6,7 @@ import { processDocument } from '../processors/documentProcessor';
 
 export class KnowledgeEngine {
     public execute(node: KnowledgeNode): RetrievalResult {
-        console.log(node);
+        /* operationalized */
         if (!validateKnowledge(node)) {
             throw new Error('Knowledge validation failed');
         }

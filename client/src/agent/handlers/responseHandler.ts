@@ -1,1 +1,1 @@
-export const handleResponse = (): void => { console.log('handleResponse'); };
+export const handleResponse = (): void => { /* operationalized */ };

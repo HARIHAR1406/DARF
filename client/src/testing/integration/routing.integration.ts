@@ -1,1 +1,1 @@
-export const testRouting = (): void => { console.log('testRouting'); };
+export const testRouting = (): void => { /* operationalized */ };

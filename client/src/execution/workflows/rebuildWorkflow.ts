@@ -1,1 +1,1 @@
-export const runRebuildWorkflow = (): void => { console.log('runRebuildWorkflow'); };
+export const runRebuildWorkflow = (): void => { /* operationalized */ };

@@ -1,1 +1,1 @@
-export const extractSemantic = (): void => { console.log('extractSemantic'); };
+export const extractSemantic = (): void => { /* operationalized */ };

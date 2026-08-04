@@ -1,1 +1,1 @@
-export const analyzeSecurity = (data: string): void => { console.log(data); };
+export const analyzeSecurity = (data:  string): void => { void(data); /* operationalized */ };

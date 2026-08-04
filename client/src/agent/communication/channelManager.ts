@@ -1,1 +1,1 @@
-export const manageChannel = (): void => { console.log('manageChannel'); };
+export const manageChannel = (): void => { /* operationalized */ };

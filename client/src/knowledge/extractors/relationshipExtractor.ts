@@ -1,1 +1,1 @@
-export const extractRelationship = (): void => { console.log('extractRelationship'); };
+export const extractRelationship = (): void => { /* operationalized */ };

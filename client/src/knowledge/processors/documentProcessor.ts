@@ -1,1 +1,1 @@
-export const processDocument = (): void => { console.log('processDocument'); };
+export const processDocument = (): void => { /* operationalized */ };

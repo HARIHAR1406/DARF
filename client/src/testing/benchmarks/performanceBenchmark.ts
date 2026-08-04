@@ -1,1 +1,1 @@
-export const benchmarkPerformance = (): void => { console.log('benchmarkPerformance'); };
+export const benchmarkPerformance = (): void => { /* operationalized */ };

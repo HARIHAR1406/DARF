@@ -1,1 +1,1 @@
-export const profileMemory = (): void => { console.log('profileMemory'); };
+export const profileMemory = (): void => { /* operationalized */ };

@@ -1,1 +1,1 @@
-export const dispatchRequest = (): void => { console.log('dispatchRequest'); };
+export const dispatchRequest = (): void => { /* operationalized */ };

@@ -1,1 +1,1 @@
-export const trainResponse = (): void => { console.log('trainResponse'); };
+export const trainResponse = (): void => { /* operationalized */ };

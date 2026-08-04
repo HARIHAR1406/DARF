@@ -1,1 +1,1 @@
-export const coordinateWorkflow = (): void => { console.log('coordinateWorkflow'); };
+export const coordinateWorkflow = (): void => { /* operationalized */ };

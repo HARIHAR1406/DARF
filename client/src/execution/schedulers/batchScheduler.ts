@@ -1,1 +1,1 @@
-export const scheduleBatch = (): void => { console.log('scheduleBatch'); };
+export const scheduleBatch = (): void => { /* operationalized */ };

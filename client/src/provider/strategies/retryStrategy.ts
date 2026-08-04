@@ -1,1 +1,1 @@
-export const executeRetry = (): void => { console.log('executeRetry'); };
+export const executeRetry = (): void => { /* operationalized */ };

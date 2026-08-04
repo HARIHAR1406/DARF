@@ -1,1 +1,1 @@
-export const executeFallback = (): void => { console.log('executeFallback'); };
+export const executeFallback = (): void => { /* operationalized */ };

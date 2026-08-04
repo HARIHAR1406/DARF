@@ -1,7 +1,5 @@
 import { create } from 'zustand';
 import { AIMessage } from '../ai/types/ai';
-import { providers } from '../ai/providers';
-import { ContextManager } from '../ai/managers/contextManager';
 
 interface ChatState {
   messages: AIMessage[];
@@ -36,24 +34,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const aiMsg: AIMessage = { id: crypto.randomUUID(), role: 'model', content: '', timestamp: Date.now() };
     set((state) => ({ messages: [...state.messages, aiMsg] }));
 
-    const { messages, provider } = get();
-    const context = ContextManager.buildContext(messages.slice(0, -1)); // exclude the empty aiMsg
-    const selectedProvider = providers[provider];
-
-    if (!selectedProvider) {
-      console.error('Provider not found');
-      set({ isStreaming: false });
-      return;
-    }
-
     try {
-      await selectedProvider.streamText(context, (chunk) => {
-        if (!chunk.isFinished) {
-          get().updateLastMessage(chunk.text);
-        } else {
-          set({ isStreaming: false });
-        }
-      });
+      const { RuntimeIntegration } = await import('../execution/RuntimeIntegration');
+      const result = await RuntimeIntegration.executeFullPipeline(content);
+      get().updateLastMessage(result);
+      set({ isStreaming: false });
     } catch (err: unknown) {
       console.error(err);
       get().updateLastMessage('\n\n**Error:** ' + (err instanceof Error ? err.message : String(err)));

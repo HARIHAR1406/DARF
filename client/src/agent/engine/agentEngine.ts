@@ -7,7 +7,7 @@ import { coordinateTask } from '../coordinators/taskCoordinator';
 
 export class AgentEngine {
     public processMessage(state: AgentState): AgentMessage {
-        console.log(state);
+        /* operationalized */
         
         if (!validateAgent(state)) {
             throw new Error('Agent validation failed');

@@ -1,1 +1,1 @@
-export const benchmarkMemory = (): void => { console.log('benchmarkMemory'); };
+export const benchmarkMemory = (): void => { /* operationalized */ };

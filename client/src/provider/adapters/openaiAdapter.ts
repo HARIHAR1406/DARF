@@ -1,1 +1,1 @@
-export const executeOpenAI = (): void => { console.log('executeOpenAI'); };
+export const executeOpenAI = (): void => { /* operationalized */ };

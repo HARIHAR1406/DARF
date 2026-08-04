@@ -1,1 +1,1 @@
-export const retrieveSemantic = (): void => { console.log('retrieveSemantic'); };
+export const retrieveSemantic = (): void => { /* operationalized */ };

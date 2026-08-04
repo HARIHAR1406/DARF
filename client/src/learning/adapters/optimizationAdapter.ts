@@ -1,1 +1,1 @@
-export const adaptOptimization = (): void => { console.log('adaptOptimization'); };
+export const adaptOptimization = (): void => { /* operationalized */ };

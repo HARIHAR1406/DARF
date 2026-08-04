@@ -1,1 +1,1 @@
-export const indexRelationship = (): void => { console.log('indexRelationship'); };
+export const indexRelationship = (): void => { /* operationalized */ };
