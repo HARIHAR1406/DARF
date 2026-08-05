@@ -1,4 +1,9 @@
+import { EvaluationMetrics } from './EvaluationResult';
+
 export interface FeedbackRecord {
     id: string;
-    score: number;
+    learningStateId: string;
+    timestamp: number;
+    metrics: EvaluationMetrics;
+    anomalyDetected: boolean;
 }

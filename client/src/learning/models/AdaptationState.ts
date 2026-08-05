@@ -1,4 +1,7 @@
 export interface AdaptationState {
-    status: string;
-    strategy: string;
+    id: string;
+    originalScore: number;
+    adaptedScore: number;
+    appliedStrategies: string[];
+    timestamp: number;
 }

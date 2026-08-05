@@ -38,7 +38,18 @@ export class RuntimeIntegration {
             const knowledgeResult = knowledgeService.processKnowledge(knowledgeNode);
 
             // Knowledge -> Learning
-            const learningState = { id: 'learn-1', isActive: true };
+            const learningState = { 
+                id: 'learn-1', 
+                isActive: true, 
+                timestamp: Date.now(),
+                context: {
+                    userRequest,
+                    providerResponse: providerResult.data,
+                    knowledgeScore: knowledgeResult.score,
+                    latencyMs: providerResult.latencyMs || 500, // Handle missing latency from stub gracefully
+                    tokenUsage: providerResult.tokensUsed || 100 // Handle missing tokens gracefully
+                }
+            };
             const learningResult = learningService.processLearning(learningState);
 
             return JSON.stringify({
