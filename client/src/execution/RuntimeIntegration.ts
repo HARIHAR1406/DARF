@@ -34,7 +34,7 @@ export class RuntimeIntegration {
             }
 
             // Provider -> Knowledge
-            const knowledgeNode = { id: 'know-1', type: 'execution' };
+            const knowledgeNode = { id: 'know-1', type: 'execution', content: providerResult.data };
             const knowledgeResult = knowledgeService.processKnowledge(knowledgeNode);
 
             // Knowledge -> Learning

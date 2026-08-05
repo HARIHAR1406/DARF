@@ -1,5 +1,13 @@
 import { KnowledgeNode } from './KnowledgeNode';
+
+export interface KnowledgeEdge {
+    sourceId: string;
+    targetId: string;
+    relationshipType: string;
+    weight: number;
+}
+
 export interface KnowledgeGraph {
-    nodes: KnowledgeNode[];
-    edges: string[];
+    nodes: Map<string, KnowledgeNode>;
+    edges: KnowledgeEdge[];
 }
