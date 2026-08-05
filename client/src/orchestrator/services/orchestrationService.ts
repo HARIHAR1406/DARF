@@ -4,8 +4,8 @@ import { ExecutionResult } from '../models/ExecutionResult';
 class OrchestrationService {
     private engine = new OrchestrationEngine();
 
-    public processRequest(request: string): ExecutionResult {
-        return this.engine.execute(request);
+    public async processRequest(request: string): Promise<ExecutionResult> {
+        return await this.engine.execute(request);
     }
 }
 

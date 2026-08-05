@@ -7,7 +7,7 @@ import { executeProviderPipeline } from '../pipelines/providerPipeline';
 import { executeAnalysisPipeline } from '../pipelines/analysisPipeline';
 
 export class OrchestrationEngine {
-    public execute(request: string): ExecutionResult {
+    public async execute(request: string): Promise<ExecutionResult> {
         // Step 1: Receive the user request.
         void(request);
         /* operationalized */
