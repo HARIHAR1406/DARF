@@ -3,10 +3,14 @@ import { AgentState } from '../models/AgentState';
 import { AgentMessage } from '../models/AgentMessage';
 
 class AgentService {
-    private engine = new AgentEngine();
+    private engine: AgentEngine;
 
-    public execute(state: AgentState): AgentMessage {
-        return this.engine.processMessage(state);
+    constructor() {
+        this.engine = new AgentEngine();
+    }
+
+    public execute(state: AgentState, userPayload: string): AgentMessage {
+        return this.engine.processMessage(state, userPayload);
     }
 }
 

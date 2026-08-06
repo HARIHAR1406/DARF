@@ -1,4 +1,7 @@
 export interface EventState {
-    eventName: string;
-    timestamp: string;
+    eventId: string;
+    eventType: string;
+    payload: Record<string, unknown> | string;
+    source: string;
+    timestamp: number;
 }

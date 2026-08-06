@@ -1,4 +1,6 @@
 export interface CommunicationState {
-    channel: string;
-    status: string;
+    channelId: string;
+    subscribers: string[];
+    messageCount: number;
+    lastActive: number;
 }
