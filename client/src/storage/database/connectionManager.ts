@@ -11,11 +11,11 @@ export class ConnectionManager {
         if (this.initPromise) return this.initPromise;
 
         this.initPromise = new Promise((resolve, reject) => {
-            if (typeof window === 'undefined' || !window.indexedDB) {
+            if (typeof globalThis === 'undefined' || !globalThis.indexedDB) {
                 return reject(new Error('IndexedDB is not supported in this environment'));
             }
 
-            const request = window.indexedDB.open(this.dbName, this.dbVersion);
+            const request = globalThis.indexedDB.open(this.dbName, this.dbVersion);
 
             request.onerror = (event) => {
                 console.error('IndexedDB connection error', event);

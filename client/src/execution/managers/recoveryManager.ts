@@ -18,7 +18,7 @@ class RecoveryManager {
     }
     
     public async restoreCheckpoint<T>(domain: string): Promise<T | null> {
-        if (typeof window === 'undefined') {
+        if (typeof globalThis === 'undefined') {
             return null;
         }
 

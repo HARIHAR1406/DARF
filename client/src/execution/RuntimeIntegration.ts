@@ -1,13 +1,10 @@
 import { orchestrationService } from '../orchestrator/services/orchestrationService';
 import { providerService } from '../provider/services/providerService';
-import { knowledgeService } from '../knowledge/services/knowledgeService';
-import { learningService } from '../learning/services/learningService';
-import { contextService } from '../context/services/contextService';
 import { storageService } from '../storage/services/storageService';
+import { workerService } from '../workers/services/workerService';
 import { agentService } from '../agent/services/agentService';
-import { optimizationService } from '../optimization/services/optimizationService';
 import { ProviderRequest } from '../provider/models/ProviderRequest';
-import { ExecutionEngine } from './engine/executionEngine';
+import { ProviderResponse } from '../provider/models/ProviderResponse';
 import { dispatchResponse } from '../agent/dispatchers/responseDispatcher';
 import { agentManager } from '../agent/managers/agentManager';
 
@@ -18,20 +15,14 @@ export class RuntimeIntegration {
         try {
             if (!this.isInitialized) {
                 await storageService.initialize();
-                await Promise.all([
-                    contextService.initialize(),
-                    learningService.initialize(),
-                    knowledgeService.initialize()
-                ]);
+                await workerService.initialize();
                 this.isInitialized = true;
             }
-            // User -> Request Dispatcher -> Agent Coordinator -> Workflow Coordinator -> Execution Manager -> Provider Layer -> Knowledge Layer -> Learning Layer -> Analysis Layer -> Response Generator -> User
-
             
             // 1. Agent Initialization
             const agentState = agentManager.registerAgent(`agent-${Date.now()}`);
 
-            // 2. Agent Dispatcher (Validates, queues, and tracks)
+            // 2. Agent Dispatcher
             const agentResponse = agentService.execute(agentState, userRequest);
 
             // 3. Orchestration
@@ -40,22 +31,30 @@ export class RuntimeIntegration {
                 throw new Error('Orchestration failed');
             }
 
-            // 4. Execution Engine (Wraps Workflow Manager)
-            const execEngine = new ExecutionEngine();
-            const execResult = execEngine.execute({ id: `exec-${Date.now()}`, isActive: true, status: 'initialized' }, userRequest);
+            // 4. Execution Engine (Offloaded to WebWorker)
+            const execResult = await workerService.executeTask<unknown, { data: unknown }>('execution', {
+                state: { id: `exec-${Date.now()}`, isActive: true, status: 'initialized' },
+                userRequest
+            });
             
             // 5. Optimization (Pre-Execution & Cache) & Provider Layer
             let providerConfig: ProviderRequest = { 
                 id: `prov-${Date.now()}`, 
-                payload: execResult.data, 
+                payload: execResult.data as string, 
                 providerName: 'gemini' 
             };
             
-            // Rewrite prompt via optimization layer
-            providerConfig = optimizationService.optimizePreExecution(providerConfig);
+            // Rewrite prompt via optimization worker
+            providerConfig = await workerService.executeTask<unknown, ProviderRequest>('optimization', {
+                action: 'pre',
+                request: providerConfig
+            });
             
-            // Check cache
-            let providerResult = optimizationService.checkCache(providerConfig);
+            // Check cache via worker
+            let providerResult: ProviderResponse | null = await workerService.executeTask<unknown, ProviderResponse | null>('optimization', {
+                action: 'cache',
+                request: providerConfig
+            });
             
             if (!providerResult) {
                 // Cache miss, execute provider
@@ -64,34 +63,38 @@ export class RuntimeIntegration {
                     throw new Error('Provider execution failed');
                 }
                 
-                // Cache response and record metrics
-                providerResult = optimizationService.optimizePostExecution(providerConfig, providerResult);
+                // Cache response via worker
+                providerResult = await workerService.executeTask<unknown, ProviderResponse>('optimization', {
+                    action: 'post',
+                    request: providerConfig,
+                    response: providerResult
+                });
             }
 
-            // 6. Knowledge Layer
-            const knowledgeNode = { id: `know-${Date.now()}`, type: 'execution', content: providerResult.data };
-            const knowledgeResult = knowledgeService.processKnowledge(knowledgeNode);
+            // 6. Knowledge Layer (Offloaded to worker)
+            const knowledgeNode = { id: `know-${Date.now()}`, type: 'execution', content: providerResult!.data };
+            const knowledgeResult = await workerService.executeTask<unknown, { score: number }>('knowledge', { node: knowledgeNode });
 
-            // 7. Learning Layer
+            // 7. Learning Layer (Offloaded to worker)
             const learningState = { 
                 id: `learn-${Date.now()}`, 
                 isActive: true, 
                 timestamp: Date.now(),
                 context: {
                     userRequest,
-                    providerResponse: providerResult.data,
+                    providerResponse: providerResult!.data,
                     knowledgeScore: knowledgeResult.score,
-                    latencyMs: providerResult.latencyMs || 500,
-                    tokenUsage: providerResult.tokensUsed || 100
+                    latencyMs: providerResult!.latencyMs || 500,
+                    tokenUsage: providerResult!.tokensUsed || 100
                 }
             };
-            const learningResult = learningService.processLearning(learningState);
+            const learningResult = await workerService.executeTask<unknown, { passed: boolean, recommendations: string[] }>('learning', { state: learningState });
 
-            // 8. Analysis & Response Generation (Mapped to Response Dispatcher)
+            // 8. Analysis & Response Generation
             const finalPayload = {
                 agentPayload: agentResponse.payload,
                 orchestrationStatus: orchestrationResult.success.toString(),
-                providerData: providerResult.data,
+                providerData: providerResult!.data,
                 knowledgeScore: knowledgeResult.score,
                 learningPassed: learningResult.passed,
                 learningRecommendations: learningResult.recommendations
@@ -107,3 +110,4 @@ export class RuntimeIntegration {
         }
     }
 }
+
