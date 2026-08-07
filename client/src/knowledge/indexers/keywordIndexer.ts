@@ -1,15 +1,31 @@
-// Map of Keyword -> Set of Node IDs
-const keywordIndex = new Map<string, Set<string>>();
+import { KnowledgeNode } from '../models/KnowledgeNode';
+import { recoveryManager } from '../../execution/managers/recoveryManager';
 
-export const indexKeywords = (nodeId: string, keywords: string[]): void => {
-    keywords.forEach(keyword => {
-        const lowerKw = keyword.toLowerCase();
-        if (!keywordIndex.has(lowerKw)) {
-            keywordIndex.set(lowerKw, new Set());
+const keywordStore = new Map<string, Set<string>>();
+
+const restoreState = () => {
+    const recovered = recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('keywordIndexer');
+    if (recovered) {
+        recovered.forEach(([k, v]) => keywordStore.set(k, new Set(v)));
+    }
+};
+restoreState();
+
+export const indexKeywords = (node: KnowledgeNode, keywords: string[]): void => {
+    keywords.forEach(kw => {
+        const lowerKw = kw.toLowerCase();
+        if (!keywordStore.has(lowerKw)) {
+            keywordStore.set(lowerKw, new Set());
         }
-        keywordIndex.get(lowerKw)!.add(nodeId);
+        keywordStore.get(lowerKw)?.add(node.id);
     });
+    
+    const serialized = Array.from(keywordStore.entries()).map(([k, v]) => [k, Array.from(v)]);
+    recoveryManager.createCheckpoint('keywordIndexer', serialized);
 };
 
-export const getKeywordIndex = () => keywordIndex;
-export const clearKeywordIndex = () => keywordIndex.clear();
+export const getKeywordStore = () => keywordStore;
+export const clearKeywordIndex = () => {
+    keywordStore.clear();
+    recoveryManager.createCheckpoint('keywordIndexer', []);
+};

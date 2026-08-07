@@ -1,20 +1,31 @@
-// Map of metadata keys to values to Set of Node IDs
-const metadataIndex = new Map<string, Map<string | number | boolean, Set<string>>>();
+import { KnowledgeNode } from '../models/KnowledgeNode';
+import { recoveryManager } from '../../execution/managers/recoveryManager';
 
-export const indexMetadata = (nodeId: string, metadata: Record<string, string | number | boolean>): void => {
+const metadataStore = new Map<string, Set<string>>();
+
+const restoreState = () => {
+    const recovered = recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('metadataIndexer');
+    if (recovered) {
+        recovered.forEach(([k, v]) => metadataStore.set(k, new Set(v)));
+    }
+};
+restoreState();
+
+export const indexMetadata = (node: KnowledgeNode, metadata: Record<string, string>): void => {
     Object.entries(metadata).forEach(([key, value]) => {
-        if (!metadataIndex.has(key)) {
-            metadataIndex.set(key, new Map());
+        const indexKey = `${key}:${value}`;
+        if (!metadataStore.has(indexKey)) {
+            metadataStore.set(indexKey, new Set());
         }
-        
-        const valueMap = metadataIndex.get(key)!;
-        if (!valueMap.has(value)) {
-            valueMap.set(value, new Set());
-        }
-        
-        valueMap.get(value)!.add(nodeId);
+        metadataStore.get(indexKey)?.add(node.id);
     });
+    
+    const serialized = Array.from(metadataStore.entries()).map(([k, v]) => [k, Array.from(v)]);
+    recoveryManager.createCheckpoint('metadataIndexer', serialized);
 };
 
-export const getMetadataIndex = () => metadataIndex;
-export const clearMetadataIndex = () => metadataIndex.clear();
+export const getMetadataStore = () => metadataStore;
+export const clearMetadataIndex = () => {
+    metadataStore.clear();
+    recoveryManager.createCheckpoint('metadataIndexer', []);
+};

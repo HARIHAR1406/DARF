@@ -3,8 +3,13 @@ import { retrieveByVector } from './vectorRetriever';
 import { retrieveByKeyword } from './keywordRetriever';
 import { calculateRelevance } from '../analyzers/relevanceAnalyzer';
 import { rankResults } from '../analyzers/rankingAnalyzer';
+import { cacheManager } from '../../execution/managers/cacheManager';
 
 export const retrieveContext = (queryContent: string): RetrievalResult[] => {
+    const cacheKey = `ctx_ret_${Buffer.from(queryContent).toString('base64').substring(0, 32)}`;
+    const cached = cacheManager.get<RetrievalResult[]>(cacheKey);
+    if (cached) return cached;
+
     // Hybrid contextual retrieval blending semantic and keyword scoring
     const semanticResults = retrieveByVector(queryContent, 0.2); // Broad search
     const keywordResults = retrieveByKeyword(queryContent);
@@ -33,5 +38,9 @@ export const retrieveContext = (queryContent: string): RetrievalResult[] => {
     });
     
     const finalResults = Array.from(combinedMap.values());
-    return rankResults(finalResults).slice(0, 5); // Top 5 contextual results
+    const ranked = rankResults(finalResults).slice(0, 5); // Top 5 contextual results
+    
+    cacheManager.set(cacheKey, ranked, 60000);
+    
+    return ranked;
 };

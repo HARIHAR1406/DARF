@@ -1,11 +1,11 @@
 import { RetrievalResult } from '../models/RetrievalResult';
 import { extractKeywords } from '../extractors/keywordExtractor';
-import { getKeywordIndex } from '../indexers/keywordIndexer';
+import { getKeywordStore } from '../indexers/keywordIndexer';
 import { getNodeStore } from '../indexers/vectorIndexer';
 
 export const retrieveByKeyword = (queryContent: string): RetrievalResult[] => {
     const queryKeywords = extractKeywords(queryContent);
-    const keywordIndex = getKeywordIndex();
+    const keywordIndex = getKeywordStore();
     const nodeStore = getNodeStore();
     
     // Map of Node ID to Match Count
@@ -15,7 +15,7 @@ export const retrieveByKeyword = (queryContent: string): RetrievalResult[] => {
         const lowerKw = kw.toLowerCase();
         if (keywordIndex.has(lowerKw)) {
             const nodeIds = keywordIndex.get(lowerKw)!;
-            nodeIds.forEach(id => {
+            nodeIds.forEach((id: string) => {
                 matchCounts.set(id, (matchCounts.get(id) || 0) + 1);
             });
         }

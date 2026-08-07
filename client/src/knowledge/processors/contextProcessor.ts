@@ -11,5 +11,5 @@ export const processContext = (contextId: string, content: string): void => {
     };
     
     processDocument(node);
-    indexMetadata(node.id, node.metadata!);
+    indexMetadata(node, node.metadata as Record<string, string>);
 };

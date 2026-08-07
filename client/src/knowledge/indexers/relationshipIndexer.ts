@@ -1,20 +1,36 @@
-import { KnowledgeEdge } from '../models/KnowledgeGraph';
+import { KnowledgeNode } from '../models/KnowledgeNode';
+import { recoveryManager } from '../../execution/managers/recoveryManager';
 
-const relationshipIndex = new Map<string, KnowledgeEdge[]>();
+const relationshipStore = new Map<string, Set<string>>();
 
-export const indexRelationship = (edge: KnowledgeEdge): void => {
-    // Index by source
-    if (!relationshipIndex.has(edge.sourceId)) {
-        relationshipIndex.set(edge.sourceId, []);
+const restoreState = () => {
+    const recovered = recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('relationshipIndexer');
+    if (recovered) {
+        recovered.forEach(([k, v]) => relationshipStore.set(k, new Set(v)));
     }
-    relationshipIndex.get(edge.sourceId)!.push(edge);
+};
+restoreState();
+
+export const indexRelationships = (node: KnowledgeNode, relatedIds: string[]): void => {
+    relatedIds.forEach(id => {
+        // Bi-directional relationships
+        if (!relationshipStore.has(node.id)) {
+            relationshipStore.set(node.id, new Set());
+        }
+        relationshipStore.get(node.id)?.add(id);
+        
+        if (!relationshipStore.has(id)) {
+            relationshipStore.set(id, new Set());
+        }
+        relationshipStore.get(id)?.add(node.id);
+    });
     
-    // Index by target for bi-directional traversal
-    if (!relationshipIndex.has(edge.targetId)) {
-        relationshipIndex.set(edge.targetId, []);
-    }
-    relationshipIndex.get(edge.targetId)!.push(edge);
+    const serialized = Array.from(relationshipStore.entries()).map(([k, v]) => [k, Array.from(v)]);
+    recoveryManager.createCheckpoint('relationshipIndexer', serialized);
 };
 
-export const getRelationshipIndex = () => relationshipIndex;
-export const clearRelationshipIndex = () => relationshipIndex.clear();
+export const getRelationshipStore = () => relationshipStore;
+export const clearRelationshipIndex = () => {
+    relationshipStore.clear();
+    recoveryManager.createCheckpoint('relationshipIndexer', []);
+};

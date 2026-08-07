@@ -1,24 +1,40 @@
 import { MemoryEntry } from '../models/MemoryEntry';
+import { cacheManager } from '../../execution/managers/cacheManager';
+import { syncManager } from '../../execution/managers/syncManager';
 
 export class MemoryManager {
-    private memories: Map<string, MemoryEntry> = new Map();
-
     public createMemory(entry: MemoryEntry): void {
-        this.memories.set(entry.id, entry);
+        cacheManager.set(`mem_${entry.id}`, entry);
+        syncManager.queueWrite('memory', `entry_${entry.id}`, entry);
     }
 
     public updateMemory(id: string, entry: Partial<MemoryEntry>): void {
-        const existing = this.memories.get(id);
+        const existing = this.retrieveMemory(id);
         if (existing) {
-            this.memories.set(id, { ...existing, ...entry });
+            const updated = { ...existing, ...entry };
+            cacheManager.set(`mem_${id}`, updated);
+            syncManager.queueWrite('memory', `entry_${id}`, updated);
         }
     }
 
     public deleteMemory(id: string): void {
-        this.memories.delete(id);
+        cacheManager.invalidate(`mem_${id}`);
+        syncManager.queueWrite('memory', `entry_${id}`, null); // Tombstone for sync
     }
 
     public retrieveMemory(id: string): MemoryEntry | undefined {
-        return this.memories.get(id);
+        const mem = cacheManager.get<MemoryEntry>(`mem_${id}`);
+        if (mem) return mem;
+        
+        // Fallback to local storage (L2)
+        if (typeof localStorage !== 'undefined') {
+            const raw = localStorage.getItem(`memory_entry_${id}`);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                cacheManager.set(`mem_${id}`, parsed);
+                return parsed;
+            }
+        }
+        return undefined;
     }
 }

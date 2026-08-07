@@ -17,15 +17,18 @@ export class ContextEngine {
         }
 
         const normalized = normalizeContext(entry.content);
-        const compressed = this.compressor.compress(normalized);
+        
+        const memoryEntries = [{ id: entry.id, content: normalized, score: 100 }];
+        const compressedEntries = this.compressor.compress(memoryEntries);
+        const compressedContent = compressedEntries[0]?.content || normalized;
 
         const processedEntry: ContextEntry = {
             ...entry,
-            content: compressed
+            content: compressedContent
         };
 
         this.indexer.indexEntry(processedEntry);
 
-        return this.retriever.retrieve(compressed, [{ id: entry.id, content: compressed, score: 100 }]);
+        return this.retriever.retrieve(compressedContent, compressedEntries);
     }
 }

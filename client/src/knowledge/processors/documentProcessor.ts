@@ -5,7 +5,7 @@ import { generateSemanticVector } from '../extractors/semanticExtractor';
 import { indexVector } from '../indexers/vectorIndexer';
 import { indexKeywords } from '../indexers/keywordIndexer';
 import { extractRelationships } from '../extractors/relationshipExtractor';
-import { indexRelationship } from '../indexers/relationshipIndexer';
+import { indexRelationships } from '../indexers/relationshipIndexer';
 
 export const processDocument = (node: KnowledgeNode): void => {
     // 1. Vectorize
@@ -14,13 +14,11 @@ export const processDocument = (node: KnowledgeNode): void => {
     
     // 2. Extract and index keywords
     const keywords = extractKeywords(node.content);
-    indexKeywords(node.id, keywords);
+    indexKeywords(node, keywords);
     
     // 3. Extract entities and index relationships
     const entities = extractEntity(node.content);
     const relationships = extractRelationships(node.content, entities);
     
-    relationships.forEach(edge => {
-        indexRelationship(edge);
-    });
+    indexRelationships(node, relationships.map(r => r.targetId));
 };
