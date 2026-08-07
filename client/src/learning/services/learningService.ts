@@ -3,6 +3,7 @@ import { LearningState } from '../models/LearningState';
 import { EvaluationResult } from '../models/EvaluationResult';
 import { recoveryManager } from '../../execution/managers/recoveryManager';
 import { syncManager } from '../../execution/managers/syncManager';
+import { optimizationManager } from '../../optimization/managers/optimizationManager';
 
 class LearningService {
     private engine = new LearningEngine();
@@ -24,6 +25,12 @@ class LearningService {
         if (!this.initialized) this.initialize();
         
         const result = this.engine.execute(state);
+        
+        // Adjust confidence scoring based on learning feedback
+        const optState = optimizationManager.getOptimizationState('learning');
+        if (optState.cacheHitRatio > 0.5) {
+            result.metrics.confidence = Math.min(1.0, (result.metrics.confidence || 0) + 0.1); // Boost confidence if system is highly cached/stable
+        }
         
         syncManager.queueWrite('learning', `eval_${state.id}`, result);
         recoveryManager.createCheckpoint('learning_service_state', 'active');

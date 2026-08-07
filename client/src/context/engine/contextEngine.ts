@@ -5,6 +5,8 @@ import { normalizeContext } from '../utils/normalizer';
 import { MemoryCompressor } from '../memory/memoryCompressor';
 import { MemoryIndexer } from '../memory/memoryIndexer';
 import { MemoryRetriever } from '../memory/memoryRetriever';
+import { optimizationManager } from '../../optimization/managers/optimizationManager';
+import { MemoryEntry } from '../models/MemoryEntry';
 
 export class ContextEngine {
     private compressor = new MemoryCompressor();
@@ -18,8 +20,12 @@ export class ContextEngine {
 
         const normalized = normalizeContext(entry.content);
         
-        const memoryEntries = [{ id: entry.id, content: normalized, score: 100 }];
-        const compressedEntries = this.compressor.compress(memoryEntries);
+        const memoryEntries: MemoryEntry[] = [{ id: entry.id, content: normalized, score: 100, timestamp: Date.now() }];
+        
+        let compressedEntries = this.compressor.compress(memoryEntries);
+        // Optimize using new layer
+        compressedEntries = optimizationManager.context.compressContexts(compressedEntries);
+        
         const compressedContent = compressedEntries[0]?.content || normalized;
 
         const processedEntry: ContextEntry = {

@@ -3,6 +3,7 @@ import { providerService } from '../provider/services/providerService';
 import { knowledgeService } from '../knowledge/services/knowledgeService';
 import { learningService } from '../learning/services/learningService';
 import { agentService } from '../agent/services/agentService';
+import { optimizationService } from '../optimization/services/optimizationService';
 import { ProviderRequest } from '../provider/models/ProviderRequest';
 import { ExecutionEngine } from './engine/executionEngine';
 import { dispatchResponse } from '../agent/dispatchers/responseDispatcher';
@@ -29,15 +30,28 @@ export class RuntimeIntegration {
             const execEngine = new ExecutionEngine();
             const execResult = execEngine.execute({ id: `exec-${Date.now()}`, isActive: true, status: 'initialized' }, userRequest);
             
-            // 5. Provider Layer
-            const providerConfig: ProviderRequest = { 
+            // 5. Optimization (Pre-Execution & Cache) & Provider Layer
+            let providerConfig: ProviderRequest = { 
                 id: `prov-${Date.now()}`, 
                 payload: execResult.data, 
                 providerName: 'gemini' 
             };
-            const providerResult = await providerService.execute(providerConfig);
-            if (!providerResult.success) {
-                throw new Error('Provider execution failed');
+            
+            // Rewrite prompt via optimization layer
+            providerConfig = optimizationService.optimizePreExecution(providerConfig);
+            
+            // Check cache
+            let providerResult = optimizationService.checkCache(providerConfig);
+            
+            if (!providerResult) {
+                // Cache miss, execute provider
+                providerResult = await providerService.execute(providerConfig);
+                if (!providerResult.success) {
+                    throw new Error('Provider execution failed');
+                }
+                
+                // Cache response and record metrics
+                providerResult = optimizationService.optimizePostExecution(providerConfig, providerResult);
             }
 
             // 6. Knowledge Layer
