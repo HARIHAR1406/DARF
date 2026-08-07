@@ -1,6 +1,6 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ProviderRequest } from '../models/ProviderRequest';
 import { ProviderResponse } from '../models/ProviderResponse';
+import { providerProxy } from '../proxy/providerProxy';
 
 export const executeGemini = async (request: ProviderRequest): Promise<ProviderResponse> => {
     const startTime = Date.now();
@@ -10,29 +10,56 @@ export const executeGemini = async (request: ProviderRequest): Promise<ProviderR
         throw new Error('Gemini API Key is missing.');
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    
     try {
-        // Model Selection & Safety configuration
-        const model = genAI.getGenerativeModel({ 
-            model: request.model || 'gemini-1.5-flash',
-            systemInstruction: request.systemPrompt
+        const model = request.model || 'gemini-1.5-flash';
+        const payload: Record<string, unknown> = {
+            contents: [
+                {
+                    role: 'user',
+                    parts: [{ text: request.payload }]
+                }
+            ]
+        };
+
+        if (request.systemPrompt) {
+            payload.systemInstruction = {
+                parts: [{ text: request.systemPrompt }]
+            };
+        }
+
+        const response = await providerProxy.executeProxy({
+            endpoint: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: payload,
+            timeoutMs: 30000
         });
 
-        const result = await model.generateContent(request.payload);
-        const response = await result.response;
-        
+        const result = await response.json();
         const latencyMs = Date.now() - startTime;
         
-        // Tokens can be approximated or fetched if provided by the API response
+        if (result.error) {
+            throw new Error(`Gemini API Error: ${result.error.message || JSON.stringify(result.error)}`);
+        }
+
+        let textData = '';
+        if (result.candidates && result.candidates.length > 0) {
+            const candidate = result.candidates[0];
+            if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+                textData = candidate.content.parts[0].text || '';
+            }
+        }
+
         let tokensUsed = 0;
-        if (response.usageMetadata) {
-            tokensUsed = response.usageMetadata.totalTokenCount;
+        if (result.usageMetadata) {
+            tokensUsed = result.usageMetadata.totalTokenCount || 0;
         }
 
         return {
             success: true,
-            data: response.text(),
+            data: textData,
             providerName: 'gemini',
             tokensUsed,
             latencyMs

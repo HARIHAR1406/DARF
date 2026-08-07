@@ -1,6 +1,6 @@
-import OpenAI from 'openai';
 import { ProviderRequest } from '../models/ProviderRequest';
 import { ProviderResponse } from '../models/ProviderResponse';
+import { providerProxy } from '../proxy/providerProxy';
 
 export const executeOpenAI = async (request: ProviderRequest): Promise<ProviderResponse> => {
     const startTime = Date.now();
@@ -10,33 +10,41 @@ export const executeOpenAI = async (request: ProviderRequest): Promise<ProviderR
         throw new Error('OpenAI API Key is missing.');
     }
 
-    const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-    
     try {
-        const completion = await openai.chat.completions.create({
+        const payload = {
             model: request.model || 'gpt-4o',
             messages: [
                 { role: 'system', content: request.systemPrompt || 'You are a helpful assistant.' },
                 { role: 'user', content: request.payload }
-            ],
-            // Stream support would require a streaming interface which we aren't standardizing here yet,
-            // but we can prepare the infrastructure. For now we use standard blocking await.
+            ]
+        };
+
+        const response = await providerProxy.executeProxy({
+            endpoint: 'https://api.openai.com/v1/chat/completions',
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: payload,
+            timeoutMs: 30000
         });
 
+        const result = await response.json();
         const latencyMs = Date.now() - startTime;
         
+        if (result.error) {
+            throw new Error(`OpenAI API Error: ${result.error.message || JSON.stringify(result.error)}`);
+        }
+
         return {
             success: true,
-            data: completion.choices[0]?.message?.content || '',
+            data: result.choices?.[0]?.message?.content || '',
             providerName: 'openai',
-            tokensUsed: completion.usage?.total_tokens || 0,
+            tokensUsed: result.usage?.total_tokens || 0,
             latencyMs
         };
     } catch (error: unknown) {
-        if (error instanceof OpenAI.APIError) {
-            // Exception mapping
-            throw new Error(`OpenAI Error [${error.status}]: ${error.message}`);
-        }
-        throw error;
+        throw new Error(`OpenAI Error: ${error instanceof Error ? error.message : String(error)}`);
     }
 };

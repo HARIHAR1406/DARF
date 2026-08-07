@@ -10,8 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.115.0",
-    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.3.4",
     "@supabase/supabase-js": "^2.112.0",
     "axios": "^1.6.7",
@@ -19,7 +17,6 @@
     "firebase": "^10.8.1",
     "framer-motion": "^11.0.8",
     "lucide-react": "^0.358.0",
-    "openai": "^7.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.0",
