@@ -8,16 +8,22 @@ import { ProviderResponse } from '../provider/models/ProviderResponse';
 import { dispatchResponse } from '../agent/dispatchers/responseDispatcher';
 import { agentManager } from '../agent/managers/agentManager';
 
+import { securityService } from '../security/services/securityService';
+
 export class RuntimeIntegration {
     private static isInitialized = false;
 
     public static async executeFullPipeline(userRequest: string): Promise<string> {
         try {
             if (!this.isInitialized) {
+                securityService.initialize();
                 await storageService.initialize();
                 await workerService.initialize();
                 this.isInitialized = true;
             }
+            
+            // 0. Security Layer: Validate Request
+            securityService.validateRequest(userRequest);
             
             // 1. Agent Initialization
             const agentState = agentManager.registerAgent(`agent-${Date.now()}`);
@@ -102,7 +108,10 @@ export class RuntimeIntegration {
 
             const dispatchedResponse = dispatchResponse(finalPayload);
             
-            return JSON.stringify(dispatchedResponse.payload);
+            const rawResponseString = JSON.stringify(dispatchedResponse.payload);
+            
+            // 9. Security Layer: Sanitize Response
+            return securityService.sanitizeResponse(rawResponseString);
             
         } catch (error: unknown) {
             console.error('Pipeline execution error:', error);

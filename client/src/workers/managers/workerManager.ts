@@ -1,6 +1,8 @@
 import { WorkerState } from '../models/WorkerState';
 import { messageManager } from './messageManager';
 import { WorkerResponse } from '../messages/WorkerResponse';
+import { SecurityValidator } from '../../security/validators/securityValidator';
+import { securityManager } from '../../security/managers/securityManager';
 
 class WorkerManager {
     private workers = new Map<string, Worker>();
@@ -21,6 +23,16 @@ class WorkerManager {
 
         workerInstance.onmessage = (e: MessageEvent<WorkerResponse>) => {
             const response = e.data;
+            
+            // Security Validation for Boundary
+            const validation = SecurityValidator.validateWorkerMessage(response.type, response.data);
+            if (!validation.isValid) {
+                console.error(`Security blocked unsafe worker response from ${name}`);
+                securityManager.incrementBlockedRequests();
+                messageManager.rejectMessage(response.id, new Error('Security boundary violation from worker'));
+                return;
+            }
+            
             if (response.type === 'HEARTBEAT') {
                 this.updateHeartbeat(name);
             } else {
