@@ -3,13 +3,12 @@ import { recoveryManager } from '../../execution/managers/recoveryManager';
 
 const relationshipStore = new Map<string, Set<string>>();
 
-const restoreState = () => {
-    const recovered = recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('relationshipIndexer');
+export const restoreRelationshipState = async () => {
+    const recovered = await recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('relationshipIndexer');
     if (recovered) {
         recovered.forEach(([k, v]) => relationshipStore.set(k, new Set(v)));
     }
 };
-restoreState();
 
 export const indexRelationships = (node: KnowledgeNode, relatedIds: string[]): void => {
     relatedIds.forEach(id => {

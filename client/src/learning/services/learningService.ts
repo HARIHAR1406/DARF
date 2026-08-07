@@ -9,10 +9,10 @@ class LearningService {
     private engine = new LearningEngine();
     private initialized = false;
     
-    private initialize(): void {
+    public async initialize(): Promise<void> {
         if (this.initialized) return;
         
-        const recoveredState = recoveryManager.restoreCheckpoint<string>('learning_service_state');
+        const recoveredState = await recoveryManager.restoreCheckpoint<string>('learning_service_state');
         if (recoveredState === 'active') {
              console.log('Learning service recovered successfully.');
         } else {
@@ -22,7 +22,9 @@ class LearningService {
     }
 
     public processLearning(state: LearningState): EvaluationResult {
-        if (!this.initialized) this.initialize();
+        if (!this.initialized) {
+            console.warn('LearningService processed before initialization completed.');
+        }
         
         const result = this.engine.execute(state);
         

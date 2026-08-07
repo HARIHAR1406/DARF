@@ -1,5 +1,8 @@
+import { storageService } from '../../storage/services/storageService';
+import { STORES } from '../../storage/migrations/schemaManager';
+
 class SyncManager {
-    private writeQueue: Map<string, { key: string, data: string }> = new Map();
+    private writeQueue: Map<string, { store: string, key: string, data: string }> = new Map();
     private syncInterval: number | null = null;
     private isSyncing: boolean = false;
 
@@ -9,7 +12,7 @@ class SyncManager {
 
     public queueWrite(storeKey: string, key: string, data: unknown): void {
         const serialized = typeof data === 'string' ? data : JSON.stringify(data);
-        this.writeQueue.set(`${storeKey}::${key}`, { key: `${storeKey}_${key}`, data: serialized });
+        this.writeQueue.set(`${storeKey}::${key}`, { store: storeKey, key, data: serialized });
     }
 
     public async flush(): Promise<void> {
@@ -18,8 +21,10 @@ class SyncManager {
         this.isSyncing = true;
         try {
             const entries = Array.from(this.writeQueue.entries());
-            for (const [queueKey, { key, data }] of entries) {
-                localStorage.setItem(key, data);
+            for (const [queueKey, { store, key, data }] of entries) {
+                // If it's a specific store, write there. Otherwise default to 'metadata' or 'sessions'
+                const targetStore = STORES.includes(store) ? store : 'metadata';
+                await storageService.put(targetStore, key, JSON.parse(data));
                 this.writeQueue.delete(queueKey);
             }
         } catch (error) {

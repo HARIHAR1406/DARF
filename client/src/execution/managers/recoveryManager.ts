@@ -1,4 +1,5 @@
 import { syncManager } from './syncManager';
+import { storageService } from '../../storage/services/storageService';
 
 class RecoveryManager {
     private readonly checkpointPrefix = 'ckpt_';
@@ -16,24 +17,23 @@ class RecoveryManager {
         syncManager.queueWrite('recovery', key, payload);
     }
     
-    public restoreCheckpoint<T>(domain: string): T | null {
-        if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    public async restoreCheckpoint<T>(domain: string): Promise<T | null> {
+        if (typeof window === 'undefined') {
             return null;
         }
 
-        const raw = localStorage.getItem(`recovery_${this.checkpointPrefix}${domain}`);
-        if (!raw) return null;
-
         try {
-            const payload = JSON.parse(raw);
-            const currentChecksum = this.calculateChecksum(JSON.stringify(payload.state));
+            const raw = await storageService.get<{state: unknown, checksum: string, timestamp: number}>('sessions', `recovery_${this.checkpointPrefix}${domain}`);
+            if (!raw) return null;
+
+            const currentChecksum = this.calculateChecksum(JSON.stringify(raw.state));
             
-            if (currentChecksum !== payload.checksum) {
+            if (currentChecksum !== raw.checksum) {
                 console.error(`Corruption detected in checkpoint for domain ${domain}.`);
                 return null;
             }
             
-            return payload.state as T;
+            return raw.state as T;
         } catch (error) {
             console.error(`Failed to restore checkpoint for ${domain}`, error);
             return null;

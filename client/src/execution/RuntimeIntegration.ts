@@ -2,6 +2,8 @@ import { orchestrationService } from '../orchestrator/services/orchestrationServ
 import { providerService } from '../provider/services/providerService';
 import { knowledgeService } from '../knowledge/services/knowledgeService';
 import { learningService } from '../learning/services/learningService';
+import { contextService } from '../context/services/contextService';
+import { storageService } from '../storage/services/storageService';
 import { agentService } from '../agent/services/agentService';
 import { optimizationService } from '../optimization/services/optimizationService';
 import { ProviderRequest } from '../provider/models/ProviderRequest';
@@ -10,9 +12,21 @@ import { dispatchResponse } from '../agent/dispatchers/responseDispatcher';
 import { agentManager } from '../agent/managers/agentManager';
 
 export class RuntimeIntegration {
+    private static isInitialized = false;
+
     public static async executeFullPipeline(userRequest: string): Promise<string> {
         try {
+            if (!this.isInitialized) {
+                await storageService.initialize();
+                await Promise.all([
+                    contextService.initialize(),
+                    learningService.initialize(),
+                    knowledgeService.initialize()
+                ]);
+                this.isInitialized = true;
+            }
             // User -> Request Dispatcher -> Agent Coordinator -> Workflow Coordinator -> Execution Manager -> Provider Layer -> Knowledge Layer -> Learning Layer -> Analysis Layer -> Response Generator -> User
+
             
             // 1. Agent Initialization
             const agentState = agentManager.registerAgent(`agent-${Date.now()}`);

@@ -3,13 +3,12 @@ import { recoveryManager } from '../../execution/managers/recoveryManager';
 
 const keywordStore = new Map<string, Set<string>>();
 
-const restoreState = () => {
-    const recovered = recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('keywordIndexer');
+export const restoreKeywordState = async () => {
+    const recovered = await recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('keywordIndexer');
     if (recovered) {
         recovered.forEach(([k, v]) => keywordStore.set(k, new Set(v)));
     }
 };
-restoreState();
 
 export const indexKeywords = (node: KnowledgeNode, keywords: string[]): void => {
     keywords.forEach(kw => {

@@ -3,13 +3,12 @@ import { recoveryManager } from '../../execution/managers/recoveryManager';
 
 const metadataStore = new Map<string, Set<string>>();
 
-const restoreState = () => {
-    const recovered = recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('metadataIndexer');
+export const restoreMetadataState = async () => {
+    const recovered = await recoveryManager.restoreCheckpoint<Array<[string, string[]]>>('metadataIndexer');
     if (recovered) {
         recovered.forEach(([k, v]) => metadataStore.set(k, new Set(v)));
     }
 };
-restoreState();
 
 export const indexMetadata = (node: KnowledgeNode, metadata: Record<string, string>): void => {
     Object.entries(metadata).forEach(([key, value]) => {

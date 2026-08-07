@@ -1,3 +1,5 @@
+import { syncManager } from './syncManager';
+
 interface CacheEntry<T> {
     data: T;
     expiresAt: number;
@@ -13,11 +15,15 @@ class CacheManager {
         if (this.cache.size >= this.maxSize) {
             this.evictLRU();
         }
-        this.cache.set(key, {
+        const cacheEntry = {
             data,
             expiresAt: Date.now() + ttl,
             lastAccessed: Date.now()
-        });
+        };
+        this.cache.set(key, cacheEntry);
+        
+        // Asynchronous write to IndexedDB L2 cache
+        syncManager.queueWrite('optimization', `cache_${key}`, cacheEntry);
     }
 
     public get<T>(key: string): T | undefined {

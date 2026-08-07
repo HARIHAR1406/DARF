@@ -8,11 +8,11 @@ class ContextService {
     private engine = new ContextEngine();
     private initialized = false;
 
-    public initialize(): void {
+    public async initialize(): Promise<void> {
         if (this.initialized) return;
         
         // Restore context specific states if any
-        const recoveredState = recoveryManager.restoreCheckpoint<string>('context_service_state');
+        const recoveredState = await recoveryManager.restoreCheckpoint<string>('context_service_state');
         if (recoveredState === 'active') {
             console.log('Context service recovered successfully.');
         } else {
@@ -23,7 +23,9 @@ class ContextService {
     }
 
     public processContext(entry: ContextEntry): RetrievalResult {
-        if (!this.initialized) this.initialize();
+        if (!this.initialized) {
+            console.warn('ContextService processed before initialization completed. Recovery state may be missing.');
+        }
         
         const result = this.engine.process(entry);
         syncManager.queueWrite('context', `entry_${entry.id}`, entry);

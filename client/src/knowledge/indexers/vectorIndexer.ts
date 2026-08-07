@@ -8,9 +8,9 @@ const vectorStore = new Map<string, SemanticVector>();
 const nodeStore = new Map<string, KnowledgeNode>();
 
 // Recovery hook
-const restoreState = () => {
-    const recoveredVectors = recoveryManager.restoreCheckpoint<Array<[string, SemanticVector]>>('vectorIndexer_vectors');
-    const recoveredNodes = recoveryManager.restoreCheckpoint<Array<[string, KnowledgeNode]>>('vectorIndexer_nodes');
+export const restoreVectorState = async () => {
+    const recoveredVectors = await recoveryManager.restoreCheckpoint<Array<[string, SemanticVector]>>('vectorIndexer_vectors');
+    const recoveredNodes = await recoveryManager.restoreCheckpoint<Array<[string, KnowledgeNode]>>('vectorIndexer_nodes');
     
     if (recoveredVectors) {
         recoveredVectors.forEach(([k, v]) => vectorStore.set(k, v));
@@ -19,7 +19,6 @@ const restoreState = () => {
         recoveredNodes.forEach(([k, v]) => nodeStore.set(k, v));
     }
 };
-restoreState();
 
 export const indexVector = (node: KnowledgeNode, vector: number[]): void => {
     nodeStore.set(node.id, node);
