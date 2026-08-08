@@ -1,5 +1,6 @@
 import { workerManager } from './workerManager';
 import { messageManager } from './messageManager';
+import { telemetryService } from '../../telemetry/services/telemetryService';
 import { taskScheduler } from '../utils/taskScheduler';
 import { createWorkerMessage } from '../utils/workerHelpers';
 
@@ -42,8 +43,11 @@ class WorkerPoolManager {
                 }
             }
             if (!response.success) {
+                telemetryService.trackEvent('WORKER', 'WorkerPoolManager', 'dispatchTask', 'FAILURE', 'ERROR');
                 throw new Error(response.error || 'Unknown worker error');
             }
+            
+            telemetryService.trackEvent('WORKER', 'WorkerPoolManager', 'dispatchTask', 'SUCCESS', 'INFO');
             return response.data as R;
         } catch (error) {
             if (workerState) {

@@ -1,4 +1,5 @@
 import { securityManager } from '../managers/securityManager';
+import { telemetryService } from '../../telemetry/services/telemetryService';
 import { PromptValidator } from '../validators/promptValidator';
 import { ResponseSanitizer } from '../sanitizers/responseSanitizer';
 import { InjectionAnalyzer } from '../analyzers/injectionAnalyzer';
@@ -22,6 +23,7 @@ export class SecurityService {
         const validation = PromptValidator.validate(request);
         if (!validation.isValid) {
             securityManager.incrementBlockedRequests();
+            telemetryService.trackEvent('SECURITY', 'SecurityService', 'validateRequest', 'FAILURE', 'WARNING');
             throw new Error(`SECURITY ALERT: Invalid request payload. ${validation.errors.join(', ')}`);
         }
         
@@ -29,8 +31,11 @@ export class SecurityService {
         const injection = InjectionAnalyzer.analyze(request);
         if (injection.isInjected) {
             securityManager.incrementBlockedRequests();
+            telemetryService.trackEvent('SECURITY', 'SecurityService', 'validateRequest', 'FAILURE', 'CRITICAL');
             throw new Error(`SECURITY ALERT: Prompt injection detected with confidence ${injection.confidence}`);
         }
+        
+        telemetryService.trackEvent('SECURITY', 'SecurityService', 'validateRequest', 'SUCCESS', 'INFO');
     }
     
     /**

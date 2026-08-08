@@ -2,7 +2,7 @@ import { migrationManager } from '../migrations/migrationManager';
 
 export class ConnectionManager {
     private dbName = 'DARF_Database';
-    private dbVersion = 1;
+    private dbVersion = 2;
     private db: IDBDatabase | null = null;
     private initPromise: Promise<IDBDatabase> | null = null;
 

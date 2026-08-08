@@ -1,5 +1,6 @@
 import { connectionManager } from './connectionManager';
 import { StorageEntry } from '../models/StorageEntry';
+import { telemetryService } from '../../telemetry/services/telemetryService';
 
 export class DatabaseManager {
     
@@ -15,6 +16,7 @@ export class DatabaseManager {
     }
 
     public async put<T>(storeName: string, id: string, data: T, ttl?: number): Promise<void> {
+        const start = performance.now();
         const db = await connectionManager.getConnection();
         return new Promise((resolve, reject) => {
             const transaction = db.transaction(storeName, 'readwrite');
@@ -31,13 +33,20 @@ export class DatabaseManager {
             };
 
             const request = store.put(entry);
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                telemetryService.trackPerformance('DatabaseManager', `put_${storeName}`, performance.now() - start);
+                resolve();
+            };
+            request.onerror = () => {
+                telemetryService.trackError('STORAGE', 'DatabaseManager', `put_${storeName}`, request.error);
+                reject(request.error);
+            };
             transaction.onerror = () => reject(transaction.error);
         });
     }
 
     public async get<T>(storeName: string, id: string): Promise<T | null> {
+        const start = performance.now();
         const db = await connectionManager.getConnection();
         return new Promise((resolve, reject) => {
             const transaction = db.transaction(storeName, 'readwrite'); // Readwrite to update accessedAt if needed
@@ -67,10 +76,14 @@ export class DatabaseManager {
                 entry.accessedAt = Date.now();
                 store.put(entry);
                 
+                telemetryService.trackPerformance('DatabaseManager', `get_${storeName}`, performance.now() - start);
                 resolve(entry.data);
             };
 
-            request.onerror = () => reject(request.error);
+            request.onerror = () => {
+                telemetryService.trackError('STORAGE', 'DatabaseManager', `get_${storeName}`, request.error);
+                reject(request.error);
+            };
         });
     }
 

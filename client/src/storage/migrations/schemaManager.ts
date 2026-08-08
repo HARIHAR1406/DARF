@@ -5,7 +5,8 @@ export const STORES = [
     'learning',
     'optimization',
     'sessions',
-    'metadata'
+    'metadata',
+    'telemetry'
 ];
 
 export class SchemaManager {

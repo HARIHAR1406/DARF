@@ -1,17 +1,9 @@
 import { HealthState } from '../models/HealthState';
-import { storageHealthMonitor } from './storageHealthMonitor';
-import { workerHealthMonitor } from './workerHealthMonitor';
-import { runtimeHealthMonitor } from './runtimeHealthMonitor';
+import { healthAggregator } from '../../telemetry/aggregators/healthAggregator';
 
 export class HealthMonitor {
     public async checkAllSubsystems(): Promise<HealthState[]> {
-        const results = await Promise.all([
-            storageHealthMonitor.checkHealth(),
-            workerHealthMonitor.checkHealth(),
-            runtimeHealthMonitor.checkHealth()
-        ]);
-        
-        return results;
+        return healthAggregator.aggregateHealth();
     }
 
     public isSystemHealthy(states: HealthState[]): boolean {

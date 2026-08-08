@@ -3,6 +3,7 @@ import { messageManager } from './messageManager';
 import { WorkerResponse } from '../messages/WorkerResponse';
 import { SecurityValidator } from '../../security/validators/securityValidator';
 import { securityManager } from '../../security/managers/securityManager';
+import { telemetryService } from '../../telemetry/services/telemetryService';
 
 class WorkerManager {
     private workers = new Map<string, Worker>();
@@ -21,6 +22,8 @@ class WorkerManager {
             errorCount: 0,
             activeTasks: 0
         });
+
+        telemetryService.trackEvent('WORKER', 'WorkerManager', 'registerWorker', 'SUCCESS', 'INFO', undefined, { name });
 
         workerInstance.onmessage = (e: MessageEvent<WorkerResponse>) => {
             const response = e.data;
@@ -48,6 +51,7 @@ class WorkerManager {
             if (state) {
                 state.errorCount++;
                 state.status = 'ERROR';
+                telemetryService.trackError('WORKER', 'WorkerManager', 'workerError', e instanceof Error ? e : new Error(String(e)));
             }
         };
         

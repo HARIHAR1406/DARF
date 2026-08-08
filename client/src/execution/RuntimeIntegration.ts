@@ -8,8 +8,9 @@ import { ProviderResponse } from '../provider/models/ProviderResponse';
 import { dispatchResponse } from '../agent/dispatchers/responseDispatcher';
 import { agentManager } from '../agent/managers/agentManager';
 
-import { securityService } from '../security/services/securityService';
 import { performanceTracker } from '../performance/performanceTracker';
+import { telemetryService } from '../telemetry/services/telemetryService';
+import { securityService } from '../security/services/securityService';
 
 export class RuntimeIntegration {
     private static isInitialized = false;
@@ -18,10 +19,12 @@ export class RuntimeIntegration {
         const startTime = performance.now();
         try {
             if (!this.isInitialized) {
+                telemetryService.trackEvent('RUNTIME', 'RuntimeIntegration', 'Initialize', 'PENDING', 'INFO');
                 securityService.initialize();
                 await storageService.initialize();
                 await workerService.initialize();
                 this.isInitialized = true;
+                telemetryService.trackEvent('RUNTIME', 'RuntimeIntegration', 'Initialize', 'SUCCESS', 'INFO');
             }
             
             // 0. Security Layer: Validate Request
@@ -118,10 +121,12 @@ export class RuntimeIntegration {
             
             const totalLatency = performance.now() - startTime;
             performanceTracker.track('RuntimeIntegration.executeFullPipeline', totalLatency);
+            telemetryService.trackPerformance('RuntimeIntegration', 'executeFullPipeline', totalLatency);
             
             return sanitized;
             
         } catch (error: unknown) {
+            telemetryService.trackError('RUNTIME', 'RuntimeIntegration', 'executeFullPipeline', error);
             console.error('Pipeline execution error:', error);
             throw error;
         }
