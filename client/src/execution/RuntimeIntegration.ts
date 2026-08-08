@@ -11,6 +11,7 @@ import { agentManager } from '../agent/managers/agentManager';
 import { performanceTracker } from '../performance/performanceTracker';
 import { telemetryService } from '../telemetry/services/telemetryService';
 import { securityService } from '../security/services/securityService';
+import { releaseService } from '../release/services/releaseService';
 
 export class RuntimeIntegration {
     private static isInitialized = false;
@@ -20,6 +21,10 @@ export class RuntimeIntegration {
         try {
             if (!this.isInitialized) {
                 telemetryService.trackEvent('RUNTIME', 'RuntimeIntegration', 'Initialize', 'PENDING', 'INFO');
+                
+                // Bootstrap Validation Phase 15
+                await releaseService.bootstrap();
+                
                 securityService.initialize();
                 await storageService.initialize();
                 await workerService.initialize();
