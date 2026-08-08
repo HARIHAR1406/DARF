@@ -118,5 +118,15 @@ export class RuntimeIntegration {
             throw error;
         }
     }
+
+    /**
+     * Non-invasive quality & health hook for Phase 13.2.
+     * Evaluates core DARF subsystem health without running tests or blocking the main pipeline.
+     */
+    public static async checkSystemHealth() {
+        // Dynamically import to avoid pulling test infrastructure into core bundle prematurely
+        const { qualityService } = await import('../testing/services/qualityService');
+        return qualityService.checkSystemHealthOnly();
+    }
 }
 
