@@ -9,11 +9,13 @@ import { dispatchResponse } from '../agent/dispatchers/responseDispatcher';
 import { agentManager } from '../agent/managers/agentManager';
 
 import { securityService } from '../security/services/securityService';
+import { performanceTracker } from '../performance/performanceTracker';
 
 export class RuntimeIntegration {
     private static isInitialized = false;
 
     public static async executeFullPipeline(userRequest: string): Promise<string> {
+        const startTime = performance.now();
         try {
             if (!this.isInitialized) {
                 securityService.initialize();
@@ -110,8 +112,14 @@ export class RuntimeIntegration {
             
             const rawResponseString = JSON.stringify(dispatchedResponse.payload);
             
+            
             // 9. Security Layer: Sanitize Response
-            return securityService.sanitizeResponse(rawResponseString);
+            const sanitized = securityService.sanitizeResponse(rawResponseString);
+            
+            const totalLatency = performance.now() - startTime;
+            performanceTracker.track('RuntimeIntegration.executeFullPipeline', totalLatency);
+            
+            return sanitized;
             
         } catch (error: unknown) {
             console.error('Pipeline execution error:', error);

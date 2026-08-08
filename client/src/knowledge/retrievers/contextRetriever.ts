@@ -6,7 +6,8 @@ import { rankResults } from '../analyzers/rankingAnalyzer';
 import { cacheManager } from '../../execution/managers/cacheManager';
 
 export const retrieveContext = (queryContent: string): RetrievalResult[] => {
-    const cacheKey = `ctx_ret_${Buffer.from(queryContent).toString('base64').substring(0, 32)}`;
+    const safeContent = encodeURIComponent(queryContent.substring(0, 255));
+    const cacheKey = `ctx_ret_${btoa(safeContent).substring(0, 32)}`;
     const cached = cacheManager.get<RetrievalResult[]>(cacheKey);
     if (cached) return cached;
 

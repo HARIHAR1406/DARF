@@ -21,6 +21,7 @@ class WorkerPoolManager {
         
         if (workerState) {
             workerState.status = 'BUSY';
+            workerState.activeTasks = (workerState.activeTasks || 0) + 1;
         }
 
         // Dequeue precisely the task we scheduled
@@ -35,7 +36,10 @@ class WorkerPoolManager {
         try {
             const response = await responsePromise;
             if (workerState) {
-                workerState.status = 'IDLE';
+                workerState.activeTasks = Math.max(0, workerState.activeTasks - 1);
+                if (workerState.activeTasks === 0) {
+                    workerState.status = 'IDLE';
+                }
             }
             if (!response.success) {
                 throw new Error(response.error || 'Unknown worker error');
@@ -43,7 +47,10 @@ class WorkerPoolManager {
             return response.data as R;
         } catch (error) {
             if (workerState) {
-                workerState.status = 'IDLE';
+                workerState.activeTasks = Math.max(0, workerState.activeTasks - 1);
+                if (workerState.activeTasks === 0) {
+                    workerState.status = 'IDLE';
+                }
             }
             throw error;
         }

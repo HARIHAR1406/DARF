@@ -111,6 +111,80 @@ export class DatabaseManager {
             request.onerror = () => reject(request.error);
         });
     }
+
+    public async putBatch<T>(storeName: string, items: {id: string, data: T, ttl?: number}[]): Promise<void> {
+        const db = await connectionManager.getConnection();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(storeName, 'readwrite');
+            const store = transaction.objectStore(storeName);
+
+            for (const item of items) {
+                const entry: StorageEntry<T> = {
+                    id: item.id,
+                    data: item.data,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                    accessedAt: Date.now(),
+                    expiresAt: item.ttl ? Date.now() + item.ttl : undefined,
+                    checksum: this.generateChecksum(item.data)
+                };
+                store.put(entry);
+            }
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
+    }
+
+    public async deleteBatch(storeName: string, ids: string[]): Promise<void> {
+        const db = await connectionManager.getConnection();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(storeName, 'readwrite');
+            const store = transaction.objectStore(storeName);
+
+            for (const id of ids) {
+                store.delete(id);
+            }
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
+    }
+
+    public async pruneStore(storeName: string, maxItems: number): Promise<void> {
+        const db = await connectionManager.getConnection();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(storeName, 'readwrite');
+            const store = transaction.objectStore(storeName);
+            
+            // Fast cursor to grab all keys and accessedAt without loading 'data' (if IDB allows)
+            // But IDB standard cursor on object store loads the whole value.
+            // We'll collect metadata then prune if needed, inside one transaction.
+            const request = store.openCursor();
+            const entries: {id: string, accessedAt: number}[] = [];
+
+            request.onsuccess = (event) => {
+                const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+                if (cursor) {
+                    const entry = cursor.value as StorageEntry<unknown>;
+                    entries.push({ id: entry.id, accessedAt: entry.accessedAt });
+                    cursor.continue();
+                } else {
+                    // Done iterating
+                    if (entries.length > maxItems) {
+                        entries.sort((a, b) => a.accessedAt - b.accessedAt);
+                        const overage = entries.length - maxItems;
+                        for (let i = 0; i < overage; i++) {
+                            store.delete(entries[i].id);
+                        }
+                    }
+                }
+            };
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
+    }
 }
 
 export const databaseManager = new DatabaseManager();

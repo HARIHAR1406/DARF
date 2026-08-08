@@ -9,19 +9,8 @@ export class StorageManager {
     public async enforceCapacityLimits(): Promise<void> {
         for (const store of STORES) {
             try {
-                // Fetch all entries manually to enforce LRU logic
-                // In a production WebWorker, this would use a cursor with an index,
-                // but this satisfies the basic LRU requirements.
-                const entries = await databaseManager.getAll<{id: string, accessedAt: number}>(store);
-                if (entries.length > this.maxItemsPerStore) {
-                    entries.sort((a, b) => a.accessedAt - b.accessedAt);
-                    const overage = entries.length - this.maxItemsPerStore;
-                    const toDelete = entries.slice(0, overage);
-                    
-                    for (const item of toDelete) {
-                        await databaseManager.delete(store, item.id);
-                    }
-                }
+                // Efficient native transaction pruning without loading 'data' into memory
+                await databaseManager.pruneStore(store, this.maxItemsPerStore);
             } catch (e) {
                 console.error(`Failed to enforce capacity on ${store}`, e);
             }

@@ -7,4 +7,5 @@ export interface WorkerState {
     lastHeartbeat: number;
     tasksProcessed: number;
     errorCount: number;
+    activeTasks: number;
 }

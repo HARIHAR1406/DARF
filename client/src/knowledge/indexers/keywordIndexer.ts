@@ -19,12 +19,13 @@ export const indexKeywords = (node: KnowledgeNode, keywords: string[]): void => 
         keywordStore.get(lowerKw)?.add(node.id);
     });
     
-    const serialized = Array.from(keywordStore.entries()).map(([k, v]) => [k, Array.from(v)]);
-    recoveryManager.createCheckpoint('keywordIndexer', serialized);
+    recoveryManager.scheduleCheckpoint('keywordIndexer', () => 
+        Array.from(keywordStore.entries()).map(([k, v]) => [k, Array.from(v)])
+    );
 };
 
 export const getKeywordStore = () => keywordStore;
 export const clearKeywordIndex = () => {
     keywordStore.clear();
-    recoveryManager.createCheckpoint('keywordIndexer', []);
+    recoveryManager.scheduleCheckpoint('keywordIndexer', () => []);
 };

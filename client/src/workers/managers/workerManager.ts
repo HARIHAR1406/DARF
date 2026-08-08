@@ -18,7 +18,8 @@ class WorkerManager {
             status: 'INITIALIZING',
             lastHeartbeat: Date.now(),
             tasksProcessed: 0,
-            errorCount: 0
+            errorCount: 0,
+            activeTasks: 0
         });
 
         workerInstance.onmessage = (e: MessageEvent<WorkerResponse>) => {

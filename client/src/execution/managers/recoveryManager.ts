@@ -3,7 +3,21 @@ import { storageService } from '../../storage/services/storageService';
 
 class RecoveryManager {
     private readonly checkpointPrefix = 'ckpt_';
+    private debounceTimers: Map<string, number> = new Map();
     
+    public scheduleCheckpoint(domain: string, stateProvider: () => unknown, debounceMs: number = 2000): void {
+        if (this.debounceTimers.has(domain)) {
+            clearTimeout(this.debounceTimers.get(domain)!);
+        }
+        
+        const timerId = window.setTimeout(() => {
+            this.createCheckpoint(domain, stateProvider());
+            this.debounceTimers.delete(domain);
+        }, debounceMs) as unknown as number;
+        
+        this.debounceTimers.set(domain, timerId);
+    }
+
     public createCheckpoint(domain: string, state: unknown): void {
         const key = `${this.checkpointPrefix}${domain}`;
         const checksum = this.calculateChecksum(JSON.stringify(state));

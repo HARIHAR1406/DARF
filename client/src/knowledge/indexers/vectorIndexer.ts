@@ -38,8 +38,8 @@ export const indexVector = (node: KnowledgeNode, vector: number[]): void => {
     syncManager.queueWrite('knowledge', `vector_${node.id}`, semanticVector);
     
     // Create checkpoints for fast recovery
-    recoveryManager.createCheckpoint('vectorIndexer_vectors', Array.from(vectorStore.entries()));
-    recoveryManager.createCheckpoint('vectorIndexer_nodes', Array.from(nodeStore.entries()));
+    recoveryManager.scheduleCheckpoint('vectorIndexer_vectors', () => Array.from(vectorStore.entries()));
+    recoveryManager.scheduleCheckpoint('vectorIndexer_nodes', () => Array.from(nodeStore.entries()));
 };
 
 export const getVectorStore = () => vectorStore;
@@ -47,6 +47,6 @@ export const getNodeStore = () => nodeStore;
 export const clearVectorIndex = () => {
     vectorStore.clear();
     nodeStore.clear();
-    recoveryManager.createCheckpoint('vectorIndexer_vectors', []);
-    recoveryManager.createCheckpoint('vectorIndexer_nodes', []);
+    recoveryManager.scheduleCheckpoint('vectorIndexer_vectors', () => []);
+    recoveryManager.scheduleCheckpoint('vectorIndexer_nodes', () => []);
 };
